@@ -1,12 +1,5 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import cartReducer from './cartRedux';
-import userReducer from './useRedux';
-import usersReducer from './usersRedux';
-import productReducer from './productRedux';
 import dataOrderReducer from './dataOrder';
-import orderReducer from './orderRedux';
-import newReviewReducer from './newReviewRedux';
-import filterReducer from './filterRedux';
 //admin
 import userReducerAdmin from './useReduxAdmin';
 import productReducerAdmin from './productReduxAdmin';
@@ -21,14 +14,7 @@ const persistConfig = {
   storage
 };
 const rootReducer = combineReducers({
-  user: userReducer,
-  users: usersReducer,
-  cart: cartReducer,
-  product: productReducer,
   dataOrder: dataOrderReducer,
-  order: orderReducer,
-  newReview: newReviewReducer,
-  filter: filterReducer,
   //admin
   userAdmin: userReducerAdmin,
   usersAdmin: usersReducerAdmin,

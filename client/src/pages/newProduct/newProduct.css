@@ -7,14 +7,14 @@
 .newProductContainer {
   width: 650px;
   margin: auto;
-  background-color: rgba(177, 168, 168, 0.384);
+  padding: 20px 0px;
+  background-color: rgba(199, 196, 196, 0.384);
   -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
   box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
 }
 
 .addProductForm {
   margin: 10px auto;
-  display: flex;
   width: 590px;
   justify-content: space-around;
 }
@@ -23,15 +23,16 @@
 } */
 
 .addProductItem {
-  width: 250px;
+  margin: auto;
+  width: 450px;
   display: flex;
   flex-direction: column;
   margin-bottom: 10px;
 }
 
 .addProductItem > label {
-  color: gray;
-  font-weight: 600;
+  color: rgb(35, 35, 35);
+  font-weight: 450;
   margin-bottom: 10px;
 }
 

@@ -12,7 +12,7 @@ export default function OrderDetail() {
   const orderId = location.pathname.split('/')[2];
   const order = useSelector((state) => state.order.orders.find((order) => order._id === orderId));
 
-  const user = useSelector((state) => state.user.currentUser?.user);
+  const user = useSelector((state) => state.userAdmin.currentUser?.user);
   const [productState, setProductState] = useState([]);
   const [productBoughtState, setProductBoughtState] = useState(null);
   const [quantityState, setQuantityState] = useState([]);

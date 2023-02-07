@@ -1,11 +1,11 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 const useSlice = createSlice({
-  name: "use",
+  name: 'use',
   initialState: {
     currentUser: null,
     isFetching: false,
-    error: false,
+    error: false
   },
   reducers: {
     loginStart: (state) => {
@@ -22,8 +22,11 @@ const useSlice = createSlice({
     logout: (state) => {
       state.currentUser = null;
     },
-  },
+    resetUser: (state) => {
+      state.currentUser = false;
+    }
+  }
 });
 
-export const { loginStart, loginFailure, loginSuccess } = useSlice.actions;
+export const { loginStart, loginFailure, loginSuccess, resetUser } = useSlice.actions;
 export default useSlice.reducer;

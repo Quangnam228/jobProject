@@ -43,9 +43,6 @@ export default function ProductReviewAdmin() {
   };
 
   useEffect(() => {
-    // if (productId?.length === 24) {
-    //   getAllProductReview(productId, dispatch);
-    // }
     getResetReview(dispatch);
   }, [dispatch, productId]);
 

@@ -1,9 +1,10 @@
-import React, { useState } from "react";
-import styled from "styled-components";
-import { mobile } from "../responsive";
-import { login } from "../redux/apiCalls";
-import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import React, { useState } from 'react';
+import styled from 'styled-components';
+import { mobile } from '../responsive';
+import { login } from '../redux/apiCalls';
+import { login as loginAdmin } from '../redux/apiCallsAdmin';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 
 const Container = styled.div`
   width: 100vw;
@@ -18,7 +19,7 @@ const Wrapper = styled.div`
   width: 25%;
   padding: 20px;
   background-color: #fff;
-  ${mobile({ width: "75%" })}
+  ${mobile({ width: '75%' })}
 `;
 
 const Title = styled.h1`
@@ -64,32 +65,22 @@ const Error = styled.span`
 `;
 
 function Login() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const dispatch = useDispatch();
-  const { isFetching, error } = useSelector((state) => state.user);
-
-  console.log(error);
-  console.log(isFetching);
 
   const handleClick = (e) => {
     e.preventDefault();
     login(dispatch, { email: username, password });
+    loginAdmin(dispatch, { email: username, password });
   };
   return (
     <Container>
       <Wrapper>
         <Title>SING IN</Title>
         <Form>
-          <Input
-            placeholder="username"
-            onChange={(e) => setUsername(e.target.value)}
-          />
-          <Input
-            placeholder="password"
-            type="password"
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          <Input placeholder="username" onChange={(e) => setUsername(e.target.value)} />
+          <Input placeholder="password" type="password" onChange={(e) => setPassword(e.target.value)} />
           <Button onClick={handleClick}>LOGIN</Button>
           <Links>DO NOT YOU REMEMBER THE PASSWORD</Links>
           <Links>

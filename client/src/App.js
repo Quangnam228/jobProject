@@ -1,8 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import Register from './pages/Register';
 import Login from './pages/Login';
 import Auth from './pages/Auth';
-import Homepage from './pages/Homepage';
 import { useSelector } from 'react-redux';
 import DashBoard from './pages/dashBoard/DashBoard';
 import HomeAdmin from './pages/home/HomeAdmin';
@@ -18,29 +16,30 @@ import NewProductAdmin from './pages/newProduct/NewProductAdmin';
 import ProductReviewAdmin from './pages/productReview/ProductReviewAdmin';
 
 function App() {
-  // const user = useSelector((state) => state.user.currentUser);
-  // const admin = user?.user?.isAdmin;
+  const user = useSelector((state) => state.userAdmin.currentUser.user);
+  const admin = user?.isAdmin;
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="admin" element={<DashBoard />}>
-          <Route path="home" element={<HomeAdmin />} />
-          <Route path="users" element={<UserList />} />
-          <Route path="user/:userId" element={<UserAdmin />} />
-          <Route path="newUser" element={<NewUserAdmin />} />
-          <Route path="products" element={<ProductListAdmin />} />
-          <Route path="products/:productId" element={<ProductAdmin />} />
-          <Route path="newproduct" element={<NewProductAdmin />} />
-          <Route path="order/:orderId" element={<OrderDetailAdmin />} />
-          <Route path="orders" element={<OrderList />} />
-          <Route path="delivery" element={<Approved />} />
-          <Route path="reviewProduct" element={<ProductReviewAdmin />} />
-        </Route>
+        {admin && (
+          <Route path="admin" element={<DashBoard />}>
+            <Route path="home" element={<HomeAdmin />} />
+            <Route path="users" element={<UserList />} />
+            <Route path="user/:userId" element={<UserAdmin />} />
+            <Route path="newUser" element={<NewUserAdmin />} />
+            <Route path="products" element={<ProductListAdmin />} />
+            <Route path="products/:productId" element={<ProductAdmin />} />
+            <Route path="newproduct" element={<NewProductAdmin />} />
+            <Route path="order/:orderId" element={<OrderDetailAdmin />} />
+            <Route path="orders" element={<OrderList />} />
+            <Route path="delivery" element={<Approved />} />
+            <Route path="reviewProduct" element={<ProductReviewAdmin />} />
+          </Route>
+        )}
 
-        {/* <Route path="/auth" element={<Auth />}>
+        <Route path="/auth" element={<Auth />}>
           <Route path="login" element={user ? <Navigate to="/home" /> : <Login />} />
-          <Route path="register" element={user ? <Navigate to="/home" /> : <Register />} />
-        </Route> */}
+        </Route>
       </Routes>
     </BrowserRouter>
   );

@@ -6,12 +6,11 @@ import './topbar.css';
 import { useSelector } from 'react-redux';
 
 export default function Topbar() {
-  const user = useSelector((state) => state.user.currentUser);
+  const user = useSelector((state) => state.userAdmin.currentUser);
   const handleLogout = () => {
     localStorage.removeItem('persist:root');
     // dispatch(resetUser());
   };
-  console.log(user);
 
   return (
     <div className="topbar">

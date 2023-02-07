@@ -1,25 +1,25 @@
-import "./myOrder.css";
-import { DataGrid } from "@material-ui/data-grid";
-import { DeleteOutline } from "@material-ui/icons";
-import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { getOrders, deleteOrder } from "../../redux/apiCalls";
-import { format } from "timeago.js";
-import Navbar from "../../components/Navbar";
+import './myOrder.css';
+import { DataGrid } from '@material-ui/data-grid';
+import { DeleteOutline } from '@material-ui/icons';
+import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { getOrders, deleteOrder } from '../../redux/apiCalls';
+import { format } from 'timeago.js';
+import Navbar from '../../components/Navbar';
 
-import Button from "@mui/material/Button";
-import Modal from "@mui/material/Modal";
-import { FormGroup } from "@mui/material";
-import Stack from "@mui/material/Stack";
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
+import Button from '@mui/material/Button';
+import Modal from '@mui/material/Modal';
+import { FormGroup } from '@mui/material';
+import Stack from '@mui/material/Stack';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 
 export default function MyOrder() {
   const dispatch = useDispatch();
   const order = useSelector((state) => state.order.orders);
-  const user = useSelector((state) => state.user.currentUser?.user);
+  const user = useSelector((state) => state.userAdmin.currentUser?.user);
   const [isOrder, setIsOrder] = useState([]);
   const count = order.length;
 
@@ -52,7 +52,7 @@ export default function MyOrder() {
 
   const handleDelete = (id) => {
     isOrder.map((orderStatus) => {
-      if (orderStatus._id === id && orderStatus.status === "pending") {
+      if (orderStatus._id === id && orderStatus.status === 'pending') {
         setOpen(false);
         deleteOrder(id, dispatch);
       }
@@ -63,25 +63,25 @@ export default function MyOrder() {
   };
 
   const columns = [
-    { field: "_id", headerName: "ID", width: 220 },
+    { field: '_id', headerName: 'ID', width: 220 },
 
-    { field: "amount", headerName: "amount", width: 200 },
+    { field: 'amount', headerName: 'amount', width: 200 },
     {
-      field: "status",
-      headerName: "status",
-      width: 160,
+      field: 'status',
+      headerName: 'status',
+      width: 160
     },
     {
-      field: "createdAt",
-      headerName: "date",
+      field: 'createdAt',
+      headerName: 'date',
       width: 160,
       renderCell: (params) => {
         return <>{format(params.row.createdAt)}</>;
-      },
+      }
     },
     {
-      field: "action",
-      headerName: "Action",
+      field: 'action',
+      headerName: 'Action',
       width: 160,
       renderCell: (params) => {
         return (
@@ -89,18 +89,15 @@ export default function MyOrder() {
             {/* <Link to={"/orderDetail/" + params.row._id}>
               <button className="myOrderListEdit">View</button>
             </Link> */}
-            {params.row.status === "pending" ? (
-              <DeleteOutline
-                className="myOrderListDelete"
-                onClick={() => handleOpen(params.row._id)}
-              />
+            {params.row.status === 'pending' ? (
+              <DeleteOutline className="myOrderListDelete" onClick={() => handleOpen(params.row._id)} />
             ) : (
               <DeleteOutline className="myOrderNoDelete" />
             )}
           </>
         );
-      },
-    },
+      }
+    }
   ];
 
   const rows = [];
@@ -113,7 +110,7 @@ export default function MyOrder() {
           userName: user.username,
           amount: item.amount,
           status: item.status,
-          createdAt: item.createdAt,
+          createdAt: item.createdAt
         });
     });
 
@@ -137,18 +134,14 @@ export default function MyOrder() {
             <Box
               component="form"
               sx={{
-                "& > :not(style)": { m: 1, width: "55ch" },
+                '& > :not(style)': { m: 1, width: '55ch' }
               }}
               noValidate
               autoComplete="off"
             >
               <Grid container>
                 <Grid item xs={8}>
-                  <Typography
-                    id="modal-modal-title"
-                    variant="h6"
-                    component="h6"
-                  >
+                  <Typography id="modal-modal-title" variant="h6" component="h6">
                     Are you sure you want to delete?
                   </Typography>
                 </Grid>
@@ -170,18 +163,18 @@ export default function MyOrder() {
 }
 
 const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
   width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
   boxShadow: 24,
-  p: 4,
+  p: 4
 };
 
 const style2 = {
-  display: "flex",
-  justifyContent: "center",
+  display: 'flex',
+  justifyContent: 'center'
 };

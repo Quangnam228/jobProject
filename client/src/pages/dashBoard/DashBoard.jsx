@@ -7,7 +7,7 @@ const DashBoard = () => {
     <>
       <Navbar />
       <div className="container">
-        <Sidebar />
+        {/* <Sidebar /> */}
         <Outlet />
       </div>
     </>

@@ -1,48 +1,24 @@
-import "./newProduct.css";
-import { useState, useEffect } from "react";
-import {
-  getStorage,
-  ref,
-  uploadBytesResumable,
-  getDownloadURL,
-} from "firebase/storage";
-import app from "../../firebase";
-import { addProduct } from "../../redux/apiCallsAdmin";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import './newProduct.css';
+import { useState, useEffect } from 'react';
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import app from '../../firebase';
+import { addProduct } from '../../redux/apiCallsAdmin';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 export default function NewProductAdmin() {
   const [inputs, setInputs] = useState({});
   const [file, setFile] = useState(null);
-  const [cat, setCat] = useState([]);
-  const [color, setColor] = useState([]);
-  const [size, setSize] = useState([]);
   const [stock, setStock] = useState([]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const { error } = useSelector((state) => state.productAdmin);
-  console.log(error);
   const handleChange = (e) => {
     setInputs((prev) => {
       return { ...prev, [e.target.name]: e.target.value };
     });
-  };
-  const handleCategory = (e) => {
-    setCat(e.target.value.split(","));
-  };
-
-  const handleColor = (e) => {
-    setColor(e.target.value.split(","));
-  };
-
-  const handleSize = (e) => {
-    setSize(e.target.value.split(","));
-  };
-
-  const handleStock = (e) => {
-    setStock(e.target.value.split(","));
   };
 
   const handleClick = (e) => {
@@ -51,53 +27,13 @@ export default function NewProductAdmin() {
 
     if (
       file === null ||
-      cat.length < 1 ||
-      color.length < 1 ||
       // size.length < 1 ||
       stock.length < 1 ||
-      inputs.title === "" ||
-      inputs.decs === ""
+      inputs.title === '' ||
+      inputs.decs === ''
     ) {
-      toast.warning("You need to enter all the information");
+      toast.warning('You need to enter all the information');
       return;
-    }
-    let booleanCategory = false;
-    cat.forEach((category) => {
-      if (category === "accessory") {
-        return (booleanCategory = true);
-      }
-    });
-
-    if (!booleanCategory) {
-      if (color.length !== stock.length || color.length !== size.length) {
-        toast.warning(
-          "the length of the fields in the inventory must be equal"
-        );
-        return;
-      } else {
-        for (let i = 0; i < color.length; i++) {
-          inventory.push({
-            color: color[i],
-            size: size[i],
-            stock: parseInt(stock[i]),
-          });
-        }
-      }
-    } else {
-      if (color.length !== stock.length) {
-        toast.warning(
-          "the length of the fields in the inventory must be equal"
-        );
-        return;
-      } else {
-        for (let i = 0; i < color.length; i++) {
-          inventory.push({
-            color: color[i],
-            // size: size[i],
-            stock: parseInt(stock[i]),
-          });
-        }
-      }
     }
 
     const fileName = new Date().getTime() + file?.name;
@@ -106,17 +42,16 @@ export default function NewProductAdmin() {
     const uploadTask = uploadBytesResumable(storageRef, file);
 
     uploadTask.on(
-      "state_changed",
+      'state_changed',
       (snapshot) => {
-        const progress =
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log("Upload is " + progress + "% done");
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log('Upload is ' + progress + '% done');
         switch (snapshot.state) {
-          case "paused":
-            console.log("Upload is paused");
+          case 'paused':
+            console.log('Upload is paused');
             break;
-          case "running":
-            console.log("Upload is running");
+          case 'running':
+            console.log('Upload is running');
             break;
           default:
         }
@@ -127,17 +62,27 @@ export default function NewProductAdmin() {
           const product = {
             ...inputs,
             image: downloadURL,
-            categories: cat,
-            inventory: inventory,
+            inventory: inventory
           };
           console.log(product);
           addProduct(product, dispatch);
           if (!error) {
-            navigate("/admin/products");
+            navigate('/admin/products');
           }
         });
       }
     );
+  };
+
+  const [inventories, setInventories] = useState([{}]);
+  const handleAdd = (e) => {
+    e.preventDefault();
+    const newData = {};
+    setInventories([...inventories, newData]);
+  };
+  console.log(inventories);
+  const handleDelete = (e) => {
+    e.preventDefault();
   };
 
   return (
@@ -151,74 +96,59 @@ export default function NewProductAdmin() {
               <input
                 type="file"
                 id="file"
-                onChange={(e) => setFile(e.target.files[0])}
+                multiple
+                onChange={(e) => {
+                  console.log(e.target.files);
+                  // return setFile(e.target.files[0])
+                }}
               />
             </div>
             <div className="addProductItem">
-              <label>Title</label>
-              <input
-                type="text"
-                placeholder="Title......"
-                name="title"
-                onChange={handleChange}
-              />
+              <label>Name</label>
+              <input type="text" name="name" onChange={handleChange} />
             </div>
             <div className="addProductItem">
               <label>Description</label>
-              <input
-                type="text"
-                placeholder="Description..."
-                name="desc"
-                onChange={handleChange}
-              />
+              <input type="text" name="description" onChange={handleChange} />
             </div>
             <div className="addProductItem">
               <label>Category</label>
-              <input
-                type="text"
-                placeholder="Category..."
-                onChange={handleCategory}
-              />
-            </div>
-          </div>
-          <div className="addProductContainer2">
-            <div className="addProductItem">
-              <label>Price</label>
-              <input
-                name="price"
-                type="number"
-                placeholder="Price..."
-                onChange={handleChange}
-              />
+              <select />
             </div>
             <div className="addProductItem">
-              <label>Inventory</label>
-              <div className="inventoryProduct">
-                <div className="inventoryProductItem">
-                  <input
-                    name="color"
-                    type="text"
-                    placeholder="Color... ex: yellow,black"
-                    onChange={handleColor}
-                  />
-                </div>
-                <div className="inventoryProductItem">
-                  <input
-                    name="size"
-                    type="text"
-                    placeholder="Size... ex: S,M,L"
-                    onChange={handleSize}
-                  />
-                </div>
-                <div className="inventoryProductItem">
-                  <input
-                    name="stock"
-                    type="text"
-                    placeholder="Stock... ex: 12,15,123"
-                    onChange={handleStock}
-                  />
-                </div>
+              <label>Brand</label>
+              <select />
+            </div>
+            <div className="addProductItem">
+              <label>ProductInventories</label>
+              <div className="inventory">
+                {inventories.map((item, index) => {
+                  return (
+                    <div>
+                      <span>productAttribute: </span>
+                      <input
+                        type="text"
+                        name="productAttribute"
+                        className="inventoryProduct"
+                        onChange={handleChange}
+                      ></input>{' '}
+                      <br />
+                      <span>value: </span>
+                      <input type="text" name="value" className="inventoryProduct" onChange={handleChange}></input>
+                      {index !== 0 && <button onClick={handleDelete}>-</button>}
+                    </div>
+                  );
+                })}
               </div>
+              <button onClick={handleAdd}>+</button>
+            </div>
+            <div className="addProductItem">
+              <label>RetailPrice</label>
+              <input type="Number" name="retailPrice" onChange={handleChange} />
+            </div>
+            <div className="addProductItem">
+              <label>Units</label>
+              <input type="text" name="units" onChange={handleChange} />
             </div>
             <button className="addProductButton" onClick={handleClick}>
               Create
