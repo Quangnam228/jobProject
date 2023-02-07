@@ -21,6 +21,12 @@ export default function NewProductAdmin() {
     });
   };
 
+  const handleChangeProductInventories = (e) => {
+    setInputs((prev) => {
+      return { ...prev, [e.target.name]: e.target.value };
+    });
+  }
+
   const handleClick = (e) => {
     e.preventDefault();
     const inventory = [];
@@ -75,14 +81,17 @@ export default function NewProductAdmin() {
   };
 
   const [inventories, setInventories] = useState([{}]);
+  const [count, SetCount] = useState([{}]);
   const handleAdd = (e) => {
     e.preventDefault();
-    const newData = {};
+    const newData = { key: count, productAttribute: '', value: '' };
     setInventories([...inventories, newData]);
+    SetCount(count + 1)
   };
-  console.log(inventories);
-  const handleDelete = (e) => {
+  const handleDelete = (e, index) => {
     e.preventDefault();
+    const newData = inventories.filter((item) => item.key !== index);
+    setInventories(newData)
   };
 
   return (
@@ -124,23 +133,26 @@ export default function NewProductAdmin() {
               <div className="inventory">
                 {inventories.map((item, index) => {
                   return (
-                    <div>
-                      <span>productAttribute: </span>
-                      <input
-                        type="text"
-                        name="productAttribute"
-                        className="inventoryProduct"
-                        onChange={handleChange}
-                      ></input>{' '}
-                      <br />
-                      <span>value: </span>
-                      <input type="text" name="value" className="inventoryProduct" onChange={handleChange}></input>
-                      {index !== 0 && <button onClick={handleDelete}>-</button>}
+                    <div className='ProductInventories'>
+                      <div>
+                        <span>productAttribute: </span>
+                        <input
+                          type="text"
+                          name="productAttribute"
+                          className="inventoryProduct"
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div>
+                        <span>value: </span>
+                        <input type="text" name="value" className="inventoryProduct" onChange={handleChange}></input>
+                      </div>
+                      {index !== 0 && <button className='buttonSubProductInventories' onClick={handleDelete(e, index)}>-</button>}
                     </div>
                   );
                 })}
               </div>
-              <button onClick={handleAdd}>+</button>
+              <button onClick={handleAdd} className='buttonAddProductInventories'>+</button>
             </div>
             <div className="addProductItem">
               <label>RetailPrice</label>
