@@ -71,17 +71,27 @@
   padding-left: 5px;
 }
 
-.ProductInventories{
+.ProductInventories {
   display: flex;
 }
-.inventoryProduct{
+.inventoryProduct {
+  margin: 3px 7px;
   border-radius: 5px;
+  /* border: none; */
 }
-.buttonSubProductInventories{
+.buttonSubProductInventories {
+  margin-top: 3px;
   width: 30px;
   height: 30px;
+  border-radius: 5px;
+  border: none;
+  background-color: #b4b4b4;
 }
-.buttonAddProductInventories{
+.buttonAddProductInventories {
+  margin-top: 10px;
   width: 30px;
   height: 30px;
+  border-radius: 5px;
+  border: none;
+  background-color: #b4b4b4;
 }

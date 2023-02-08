@@ -9,8 +9,9 @@ import { toast } from 'react-toastify';
 
 export default function NewProductAdmin() {
   const [inputs, setInputs] = useState({});
+  const [data, setData] = useState();
+  const [inputsInventory, setInputsInventory] = useState({});
   const [file, setFile] = useState(null);
-  const [stock, setStock] = useState([]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -21,11 +22,18 @@ export default function NewProductAdmin() {
     });
   };
 
-  const handleChangeProductInventories = (e) => {
-    setInputs((prev) => {
-      return { ...prev, [e.target.name]: e.target.value };
+  const handleChangeProductInventories = (e, index) => {
+    let newData = [...inventories];
+    newData.map((item) => {
+      if (item.key === index && e.target.name === 'productAttribute') {
+        item.productAttribute = e.target.value;
+      }
+      if (item.key === index && e.target.name === 'value') {
+        item.value = e.target.value;
+      }
     });
-  }
+    setInputsInventory(newData);
+  };
 
   const handleClick = (e) => {
     e.preventDefault();
@@ -34,7 +42,6 @@ export default function NewProductAdmin() {
     if (
       file === null ||
       // size.length < 1 ||
-      stock.length < 1 ||
       inputs.title === '' ||
       inputs.decs === ''
     ) {
@@ -80,20 +87,19 @@ export default function NewProductAdmin() {
     );
   };
 
-  const [inventories, setInventories] = useState([{}]);
-  const [count, SetCount] = useState([{}]);
+  const [inventories, setInventories] = useState([{ key: 0, productAttribute: '', value: null }]);
+  const [count, SetCount] = useState(1);
   const handleAdd = (e) => {
     e.preventDefault();
-    const newData = { key: count, productAttribute: '', value: '' };
+    const newData = { key: count, productAttribute: '', value: null };
     setInventories([...inventories, newData]);
-    SetCount(count + 1)
+    SetCount(count + 1);
   };
   const handleDelete = (e, index) => {
     e.preventDefault();
     const newData = inventories.filter((item) => item.key !== index);
-    setInventories(newData)
+    setInventories(newData);
   };
-
   return (
     <div className="newProduct">
       <div className="newProductContainer">
@@ -133,26 +139,46 @@ export default function NewProductAdmin() {
               <div className="inventory">
                 {inventories.map((item, index) => {
                   return (
-                    <div className='ProductInventories'>
+                    <div className="ProductInventories">
                       <div>
-                        <span>productAttribute: </span>
                         <input
                           type="text"
-                          name="productAttribute"
+                          placeholder="productAttribute"
+                          name={`productAttribute`}
                           className="inventoryProduct"
-                          onChange={handleChange}
+                          onChange={(e) => {
+                            handleChangeProductInventories(e, index);
+                          }}
                         />
                       </div>
                       <div>
-                        <span>value: </span>
-                        <input type="text" name="value" className="inventoryProduct" onChange={handleChange}></input>
+                        <input
+                          type="text"
+                          name={`value`}
+                          placeholder="value"
+                          className="inventoryProduct"
+                          onChange={(e) => {
+                            handleChangeProductInventories(e, index);
+                          }}
+                        ></input>
                       </div>
-                      {index !== 0 && <button className='buttonSubProductInventories' onClick={handleDelete(e, index)}>-</button>}
+                      {index !== 0 && (
+                        <button
+                          className="buttonSubProductInventories"
+                          onClick={(e) => {
+                            handleDelete(e, index);
+                          }}
+                        >
+                          -
+                        </button>
+                      )}
                     </div>
                   );
                 })}
               </div>
-              <button onClick={handleAdd} className='buttonAddProductInventories'>+</button>
+              <button onClick={handleAdd} className="buttonAddProductInventories">
+                +
+              </button>
             </div>
             <div className="addProductItem">
               <label>RetailPrice</label>
