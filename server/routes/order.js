@@ -1,15 +1,11 @@
-const {
-  verifyToken,
-  verifyTokenAndAuthorization,
-  verifyTokenAndAdmin,
-} = require("../middleware/verifyToken");
-const Order = require("../models/Order");
-const Product = require("../models/Product");
+const { verifyToken, verifyTokenAndAuthorization, verifyTokenAndAdmin } = require('../middleware/verifyToken');
+const Order = require('../models/Order');
+const Product = require('../models/Product');
 
-const router = require("express").Router();
+const router = require('express').Router();
 
 // create
-router.post("/", async (req, res) => {
+router.post('/', async (req, res) => {
   const newOrder = new Order(req.body);
 
   try {
@@ -21,12 +17,12 @@ router.post("/", async (req, res) => {
 });
 
 //Update
-router.put("/:id", async (req, res) => {
+router.put('/:id', async (req, res) => {
   try {
     updateOrder = await Order.findByIdAndUpdate(
       req.params.id,
       {
-        $set: req.body,
+        $set: req.body
       },
       { new: true }
     );
@@ -37,10 +33,10 @@ router.put("/:id", async (req, res) => {
 });
 
 // get user Orders
-router.get("/find/:userId", verifyTokenAndAuthorization, async (req, res) => {
+router.get('/find/:userId', verifyTokenAndAuthorization, async (req, res) => {
   try {
     const orders = await Order.find({ userId: req.params.userId }).sort({
-      createdAt: -1,
+      createdAt: -1
     });
     res.status(200).json(orders);
   } catch (error) {
@@ -49,7 +45,7 @@ router.get("/find/:userId", verifyTokenAndAuthorization, async (req, res) => {
 });
 
 // get a Orders
-router.get("/find/order/:id", verifyTokenAndAdmin, async (req, res) => {
+router.get('/find/order/:id', verifyTokenAndAdmin, async (req, res) => {
   try {
     const order = await Order.findById(req.params.id);
     res.status(200).json(order);
@@ -59,12 +55,10 @@ router.get("/find/order/:id", verifyTokenAndAdmin, async (req, res) => {
 });
 
 // get all
-router.get("/", async (req, res) => {
+router.get('/', async (req, res) => {
   const query = req.query.new;
   try {
-    const orders = query
-      ? await Order.find().sort({ _id: -1 }).limit(5)
-      : await Order.find();
+    const orders = query ? await Order.find().sort({ id: -1 }).limit(5) : await Order.find();
     // const orders = query ? await Order.find().sort({ createdAt: -1 }).limit(5) : await Order.find().sort({ createdAt: -1 });
     res.status(200).json(orders);
   } catch (error) {
@@ -72,7 +66,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/income", async (req, res) => {
+router.get('/income', async (req, res) => {
   const productId = req.query.pid;
   const date = new Date();
 
@@ -93,23 +87,23 @@ router.get("/income", async (req, res) => {
         $match: {
           createdAt: { $gte: previousMonth },
           ...(productId && {
-            products: { $elemMatch: { productId } },
+            products: { $elemMatch: { productId } }
           }),
-          status: "delivered",
-        },
+          status: 'delivered'
+        }
       },
       {
         $project: {
-          month: { $month: "$createdAt" },
-          sales: "$amount",
-        },
+          month: { $month: '$createdAt' },
+          sales: '$amount'
+        }
       },
       {
         $group: {
-          _id: "$month",
-          total: { $sum: "$sales" },
-        },
-      },
+          id: '$month',
+          total: { $sum: '$sales' }
+        }
+      }
     ]);
     res.status(200).json(income);
     // console.log(income);
@@ -118,7 +112,7 @@ router.get("/income", async (req, res) => {
   }
 });
 
-router.get("/stats", async (req, res) => {
+router.get('/stats', async (req, res) => {
   const productId = req.query.pid;
   const date = new Date();
   const lastYear = new Date(date.setFullYear(date.getFullYear() - 1));
@@ -129,23 +123,23 @@ router.get("/stats", async (req, res) => {
         $match: {
           createdAt: { $gte: lastYear },
           ...(productId && {
-            products: { $elemMatch: { productId } },
+            products: { $elemMatch: { productId } }
           }),
-          status: "delivered",
-        },
+          status: 'delivered'
+        }
       },
       {
         $project: {
-          month: { $month: "$createdAt" },
-          sales: "$amount",
-        },
+          month: { $month: '$createdAt' },
+          sales: '$amount'
+        }
       },
       {
         $group: {
-          _id: "$month",
-          total: { $sum: "$sales" },
-        },
-      },
+          id: '$month',
+          total: { $sum: '$sales' }
+        }
+      }
     ]);
     res.status(200).json(data);
   } catch (err) {
@@ -154,35 +148,27 @@ router.get("/stats", async (req, res) => {
 });
 
 // Delete
-router.delete("/:id", async (req, res) => {
+router.delete('/:id', async (req, res) => {
   const orderDelete = await Order.findById(req.params.id);
   console.log(orderDelete);
 
   try {
-    if (
-      orderDelete.status === "approved" ||
-      orderDelete.status === "delivery"
-    ) {
+    if (orderDelete.status === 'approved' || orderDelete.status === 'delivery') {
       orderDelete.products.forEach(async (product) => {
         // console.log(product);
-        await updateStockOrderDelete(
-          product.productId,
-          product.quantity,
-          product.size,
-          product.color
-        );
+        await updateStockOrderDelete(product.productId, product.quantity, product.size, product.color);
       });
     }
 
     await Order.findByIdAndDelete(req.params.id);
-    res.status(200).json("Order has been deleted");
+    res.status(200).json('Order has been deleted');
   } catch (error) {
     res.status(500).json(error);
   }
 });
 
 // update Order Status -- Admin
-router.put("/status/:id", async (req, res) => {
+router.put('/status/:id', async (req, res) => {
   const order = await Order.findById(req.params.id);
 
   // if (order.status === "approved") {
@@ -192,14 +178,9 @@ router.put("/status/:id", async (req, res) => {
   //   });
   // }
 
-  if (req.body.status === "approved") {
+  if (req.body.status === 'approved') {
     order.products.forEach(async (product) => {
-      await updateStock(
-        product.productId,
-        product.quantity,
-        product.size,
-        product.color
-      );
+      await updateStock(product.productId, product.quantity, product.size, product.color);
     });
   }
 
@@ -207,7 +188,7 @@ router.put("/status/:id", async (req, res) => {
 
   await order.save({ validateBeforeSave: true });
   res.status(200).json({
-    success: true,
+    success: true
   });
 });
 
@@ -218,7 +199,7 @@ async function updateStock(id, quantity, size, color) {
   //     item.stock -= quantity;
   //   }
   // });
-  if (product.categories === "accessory") {
+  if (product.categories === 'accessory') {
     product.inventory.map((item) => {
       if (color === item.color) {
         item.stock -= quantity;
@@ -237,7 +218,7 @@ async function updateStock(id, quantity, size, color) {
 async function updateStockOrderDelete(id, quantity, size, color) {
   const product = await Product.findById(id);
 
-  if (product.categories === "accessory") {
+  if (product.categories === 'accessory') {
     product.inventory.map((item) => {
       if (color === item.color) {
         item.stock += quantity;

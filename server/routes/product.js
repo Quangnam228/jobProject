@@ -1,13 +1,13 @@
-const { verifyTokenAndAdmin } = require("../middleware/verifyToken");
-const Product = require("../models/Product");
-const User = require("../models/User");
-const Order = require("../models/Order");
-const ApiFeatures = require("../utils/apifeatures");
-const router = require("express").Router();
+const { verifyTokenAndAdmin } = require('../middleware/verifyToken');
+const Product = require('../models/Product');
+const User = require('../models/User');
+const Order = require('../models/Order');
+const ApiFeatures = require('../utils/apifeatures');
+const router = require('express').Router();
 
 // create
 
-router.post("/", async (req, res) => {
+router.post('/', async (req, res) => {
   const newProduct = new Product(req.body);
   console.log(newProduct);
   try {
@@ -19,12 +19,12 @@ router.post("/", async (req, res) => {
 });
 
 //Update
-router.put("/:id", async (req, res) => {
+router.put('/:id', async (req, res) => {
   try {
     updateProduct = await Product.findByIdAndUpdate(
       req.params.id,
       {
-        $set: req.body,
+        $set: req.body
       },
       { new: true }
     );
@@ -35,30 +35,30 @@ router.put("/:id", async (req, res) => {
 });
 
 // Delete
-router.delete("/:id", async (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
     await Product.findByIdAndDelete(req.params.id);
-    res.status(200).json("Product has been deleted");
+    res.status(200).json('Product has been deleted');
   } catch (error) {
     res.status(500).json(error);
   }
 });
 
 // Delete
-router.put("/trash/:id", async (req, res) => {
+router.put('/trash/:id', async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
     console.log(product);
     product.trash = true;
     product.save();
-    res.status(200).json("Product has been deleted");
+    res.status(200).json('Product has been deleted');
   } catch (error) {
     res.status(500).json(error);
   }
 });
 
 // get product
-router.get("/find/:id", async (req, res) => {
+router.get('/find/:id', async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
     res.status(200).json(product);
@@ -68,12 +68,12 @@ router.get("/find/:id", async (req, res) => {
 });
 
 //get all Product admin
-router.get("/admin/", async (req, res) => {
+router.get('/admin/', async (req, res) => {
   try {
     const products = await Product.find({ trash: false });
 
     res.status(200).json({
-      products,
+      products
     });
   } catch (error) {
     res.status(500).json(error);
@@ -81,13 +81,11 @@ router.get("/admin/", async (req, res) => {
 });
 
 //get all products again
-router.get("/get/filter", async (req, res) => {
+router.get('/get/filter', async (req, res) => {
   const resultPerPage = 10;
   const productsCount = await Product.countDocuments();
 
-  const apiFeature = new ApiFeatures(Product.find({ trash: false }), req.query)
-    .search()
-    .filter();
+  const apiFeature = new ApiFeatures(Product.find({ trash: false }), req.query).search().filter();
 
   let products = await apiFeature.query;
 
@@ -102,22 +100,22 @@ router.get("/get/filter", async (req, res) => {
     products,
     productsCount,
     resultPerPage,
-    filteredProductsCount,
+    filteredProductsCount
   });
 });
 
 // search product
-router.get("/search", async (req, res) => {
+router.get('/search', async (req, res) => {
   const searchTitle = req.query.title;
 
   let data = await Product.find({
-    title: { $regex: new RegExp("^" + searchTitle + ".*", "i") },
+    title: { $regex: new RegExp('^' + searchTitle + '.*', 'i') }
   }).exec();
   data = data.slice(0, 10);
   res.send(data);
 });
 
-router.get("/", async (req, res) => {
+router.get('/', async (req, res) => {
   const productsCount = await Product.countDocuments();
   const perPage = 10;
   const page = Number(req.query.page) || 1;
@@ -127,14 +125,7 @@ router.get("/", async (req, res) => {
   const queryKeyword = req.query.keyword;
 
   const queryCopy = { ...req.query };
-  const removeFields = [
-    "keyword",
-    "page",
-    "limit",
-    "category",
-    "size",
-    "color",
-  ];
+  const removeFields = ['keyword', 'page', 'limit', 'category', 'size', 'color'];
 
   removeFields.forEach((key) => delete queryCopy[key]);
 
@@ -143,7 +134,7 @@ router.get("/", async (req, res) => {
   let pros = JSON.parse(queryStr);
 
   const dataSearch = await Product.find({
-    title: { $regex: new RegExp("^" + queryKeyword + ".*", "i") },
+    title: { $regex: new RegExp('^' + queryKeyword + '.*', 'i') }
   });
 
   console.log(dataSearch);
@@ -165,7 +156,7 @@ router.get("/", async (req, res) => {
       products,
       productsCount,
       perPage,
-      filteredProductsCount,
+      filteredProductsCount
     });
   } catch (error) {
     res.status(500).json(error);
@@ -173,7 +164,7 @@ router.get("/", async (req, res) => {
 });
 
 // create or update review
-router.put("/review/item", async (req, res) => {
+router.put('/review/item', async (req, res) => {
   const { rating, comment, productId, userId } = req.body;
 
   const userReview = await User.findById(userId);
@@ -181,7 +172,7 @@ router.put("/review/item", async (req, res) => {
   const order = await Order.find();
 
   const userOrder = order.filter((od) => {
-    return od.userId === userId && od.status === "delivered";
+    return od.userId === userId && od.status === 'delivered';
   });
 
   let isReviewBought = false;
@@ -195,19 +186,17 @@ router.put("/review/item", async (req, res) => {
 
   if (isReviewBought) {
     const review = {
-      user: userReview._id,
+      user: userReview.id,
       name: userReview.username,
       rating: Number(rating),
-      comment,
+      comment
     };
 
-    const isReviewed = product.reviews.find(
-      (rev) => rev.user.toString() === userReview._id.toString()
-    );
+    const isReviewed = product.reviews.find((rev) => rev.user.toString() === userReview.id.toString());
 
     if (isReviewed) {
       product.reviews.forEach((rev) => {
-        if (rev.user.toString() === userReview._id.toString()) {
+        if (rev.user.toString() === userReview.id.toString()) {
           (rev.rating = rating), (rev.comment = comment);
         }
       });
@@ -227,35 +216,33 @@ router.put("/review/item", async (req, res) => {
     await product.save({ validateBeforeSave: false });
 
     res.status(200).json({
-      success: true,
+      success: true
     });
   } else {
     res.status(400).json({
       success: false,
-      message: "You have not purchased this product yet",
+      message: 'You have not purchased this product yet'
     });
   }
 });
 
-router.get("/reviews", async (req, res) => {
+router.get('/reviews', async (req, res) => {
   const product = await Product.findById(req.query.id);
 
-  !product && res.status(404).json("Product not found");
+  !product && res.status(404).json('Product not found');
 
   res.status(200).json({
     success: true,
-    reviews: product.reviews,
+    reviews: product.reviews
   });
 });
 
-router.delete("/reviewDelete/review", async (req, res) => {
+router.delete('/reviewDelete/review', async (req, res) => {
   const product = await Product.findById(req.query.productId);
 
-  !product && res.status(404).json("Product not found");
+  !product && res.status(404).json('Product not found');
 
-  const reviews = product.reviews.filter(
-    (rev) => rev._id.toString() !== req.query.id.toString()
-  );
+  const reviews = product.reviews.filter((rev) => rev.id.toString() !== req.query.id.toString());
 
   console.log(reviews);
 
@@ -280,14 +267,14 @@ router.delete("/reviewDelete/review", async (req, res) => {
     {
       reviews,
       ratings,
-      numOfReviews,
+      numOfReviews
     },
     {
-      new: true,
+      new: true
     }
   );
   res.status(200).json({
-    success: true,
+    success: true
   });
 });
 

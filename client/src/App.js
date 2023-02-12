@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Auth from './pages/Auth';
 import { useSelector } from 'react-redux';
@@ -16,21 +16,24 @@ import NewProductAdmin from './pages/newProduct/NewProductAdmin';
 import ProductReviewAdmin from './pages/productReview/ProductReviewAdmin';
 
 function App() {
-  const user = useSelector((state) => state.userAdmin.currentUser.user);
-  const admin = user?.isAdmin;
+  const user = useSelector((state) => state.userAdmin?.currentUser?.user);
+  // const navigate = useNavigate();
+  // if (!user) {
+  //   navigate('/auth/login');
+  // }
   return (
     <BrowserRouter>
       <Routes>
-        {admin && (
+        {user && (
           <Route path="admin" element={<DashBoard />}>
             <Route path="home" element={<HomeAdmin />} />
             <Route path="users" element={<UserList />} />
             <Route path="user/:userId" element={<UserAdmin />} />
             <Route path="newUser" element={<NewUserAdmin />} />
             <Route path="products" element={<ProductListAdmin />} />
-            <Route path="products/:productId" element={<ProductAdmin />} />
+            <Route path="products/:code" element={<ProductAdmin />} />
             <Route path="newproduct" element={<NewProductAdmin />} />
-            <Route path="order/:orderId" element={<OrderDetailAdmin />} />
+            <Route path="order/:code" element={<OrderDetailAdmin />} />
             <Route path="orders" element={<OrderList />} />
             <Route path="delivery" element={<Approved />} />
             <Route path="reviewProduct" element={<ProductReviewAdmin />} />
@@ -38,7 +41,7 @@ function App() {
         )}
 
         <Route path="/auth" element={<Auth />}>
-          <Route path="login" element={user ? <Navigate to="/home" /> : <Login />} />
+          <Route path="login" element={user ? <Navigate to="/admin/home" /> : <Login />} />
         </Route>
       </Routes>
     </BrowserRouter>

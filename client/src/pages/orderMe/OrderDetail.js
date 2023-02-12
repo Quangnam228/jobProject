@@ -10,7 +10,7 @@ export default function OrderDetail() {
   const dispatch = useDispatch();
   const location = useLocation();
   const orderId = location.pathname.split('/')[2];
-  const order = useSelector((state) => state.order.orders.find((order) => order._id === orderId));
+  const order = useSelector((state) => state.order.orders.find((order) => order.id === orderId));
 
   const user = useSelector((state) => state.userAdmin.currentUser?.user);
   const [productState, setProductState] = useState([]);
@@ -29,7 +29,7 @@ export default function OrderDetail() {
     const getProduct = () => {
       order.products.map((item) => {
         productState?.map((i) => {
-          if (i._id === item.productId) {
+          if (i.id === item.productId) {
             arr.push(i);
             quantityProduct.push(item.quantity);
           }
@@ -76,7 +76,7 @@ export default function OrderDetail() {
 
               <div className="orderShowInfo">
                 <span className="orderShowInfoTitle">
-                  {`Id: `} {order._id}
+                  {`Id: `} {order.id}
                 </span>
               </div>
               <div className="orderShowInfo">

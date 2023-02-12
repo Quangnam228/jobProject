@@ -1,12 +1,12 @@
-import "./widgetLg.css";
-import { useState, useEffect } from "react";
-import { userRequest } from "../../requestMethods";
-import { useSelector } from "react-redux";
-import { format } from "timeago.js";
+import './widgetLg.css';
+import { useState, useEffect } from 'react';
+import { userRequest } from '../../requestMethods';
+import { useSelector } from 'react-redux';
+import { format } from 'timeago.js';
 
 export default function WidgetLg() {
   const Button = ({ type }) => {
-    return <button className={"widgetLgButton " + type}>{type}</button>;
+    return <button className={'widgetLgButton ' + type}>{type}</button>;
   };
   const user = useSelector((state) => state.usersAdmin.users);
 
@@ -15,7 +15,7 @@ export default function WidgetLg() {
   useEffect(() => {
     const getOrder = async () => {
       try {
-        const res = await userRequest.get("orders/?new=true");
+        const res = await userRequest.get('orders/?new=true');
         setOrder(res.data);
       } catch (error) {}
     };
@@ -33,7 +33,7 @@ export default function WidgetLg() {
           <th className="widgetLgTh">Status</th>
         </tr>
         {orders.map((order) => (
-          <tr className="widgetLgTr" key={order._id}>
+          <tr className="widgetLgTr" key={order.id}>
             <td className="widgetLgUser">
               <img
                 src="https://crowd-literature.eu/wp-content/uploads/2015/01/no-avatar.gif"
@@ -42,7 +42,7 @@ export default function WidgetLg() {
               />
               {/* <span className="widgetLgName">
                 {user.map((u) => {
-                  if (order.userId === u._id) {
+                  if (order.userId === u.id) {
                     return u.username;
                   }
                 })}

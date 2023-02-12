@@ -35,7 +35,7 @@ export default function Approved() {
   };
 
   const columns = [
-    { field: '_id', headerName: 'ID', width: 220 },
+    { field: 'id', headerName: 'ID', width: 220 },
     {
       field: 'userName',
       headerName: 'Name customer',
@@ -62,10 +62,10 @@ export default function Approved() {
       renderCell: (params) => {
         return (
           <>
-            <Link to={'/admin/order/' + params.row._id}>
+            <Link to={'/admin/order/' + params.row.id}>
               <button className="productListEdit">Edit</button>
             </Link>
-            <DeleteOutline className="productListDelete" onClick={() => handleDelete(params.row._id)} />
+            <DeleteOutline className="productListDelete" onClick={() => handleDelete(params.row.id)} />
           </>
         );
       }
@@ -76,9 +76,9 @@ export default function Approved() {
   // orderStatus &&
   //   orderStatus.forEach((item) => {
   //     users.forEach((user) => {
-  //       item.userId === user._id &&
+  //       item.userId === user.id &&
   //         rows.push({
-  //           _id: item._id,
+  //           id: item.id,
   //           userName: user.username,
   //           amount: item.amount,
   //           status: item.status,
@@ -96,7 +96,7 @@ export default function Approved() {
         rows={rows}
         disableSelectionOnClick
         columns={columns}
-        getRowId={(row) => row._id}
+        getRowId={(row) => row.id}
         pageSize={8}
         checkboxSelection
       />

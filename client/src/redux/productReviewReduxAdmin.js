@@ -1,11 +1,11 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 const productReviewSlice = createSlice({
-  name: "productReview",
+  name: 'productReview',
   initialState: {
     productReview: [],
     isFetching: false,
-    error: false,
+    error: false
   },
   reducers: {
     productReviewStart: (state) => {
@@ -25,7 +25,7 @@ const productReviewSlice = createSlice({
     deleteReviewSuccess: (state, action) => {
       state.isFetching = false;
       state.productReview.splice(
-        state.productReview.findIndex((item) => item._id === action.payload),
+        state.productReview.findIndex((item) => item.id === action.payload),
         1
       );
     },
@@ -43,8 +43,8 @@ const productReviewSlice = createSlice({
     resetReviewFailure: (state) => {
       state.isFetching = false;
       state.error = true;
-    },
-  },
+    }
+  }
 });
 
 export const {
@@ -56,6 +56,6 @@ export const {
   deleteReviewSuccess,
   resetReviewStart,
   resetReviewSuccess,
-  resetReviewFailure,
+  resetReviewFailure
 } = productReviewSlice.actions;
 export default productReviewSlice.reducer;

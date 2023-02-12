@@ -1,22 +1,18 @@
-import React, { useEffect, useState } from "react";
-import { DataGrid } from "@material-ui/data-grid";
-import { useSelector, useDispatch } from "react-redux";
-import DeleteIcon from "@material-ui/icons/Delete";
-import Star from "@material-ui/icons/Star";
-import "./productReview.css";
-import {
-  getAllProductReview,
-  deleteReview,
-  getResetReview,
-} from "../../redux/apiCallsAdmin";
+import React, { useEffect, useState } from 'react';
+import { DataGrid } from '@material-ui/data-grid';
+import { useSelector, useDispatch } from 'react-redux';
+import DeleteIcon from '@material-ui/icons/Delete';
+import Star from '@material-ui/icons/Star';
+import './productReview.css';
+import { getAllProductReview, deleteReview, getResetReview } from '../../redux/apiCallsAdmin';
 
-import Button from "@mui/material/Button";
-import Modal from "@mui/material/Modal";
-import { FormGroup } from "@mui/material";
-import Stack from "@mui/material/Stack";
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
+import Button from '@mui/material/Button';
+import Modal from '@mui/material/Modal';
+import { FormGroup } from '@mui/material';
+import Stack from '@mui/material/Stack';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 
 export default function ProductReviewAdmin() {
   const dispatch = useDispatch();
@@ -47,54 +43,49 @@ export default function ProductReviewAdmin() {
   }, [dispatch, productId]);
 
   const columns = [
-    { field: "_id", headerName: "Review ID", minWidth: 180, flex: 0.4 },
+    { field: 'id', headerName: 'Review ID', minWidth: 180, flex: 0.4 },
 
     {
-      field: "name",
-      headerName: "User",
+      field: 'name',
+      headerName: 'User',
       minWidth: 140,
-      flex: 0.3,
+      flex: 0.3
     },
 
     {
-      field: "comment",
-      headerName: "Comment",
+      field: 'comment',
+      headerName: 'Comment',
       minWidth: 300,
-      flex: 0.6,
+      flex: 0.6
     },
 
     {
-      field: "rating",
-      headerName: "Rating",
-      type: "number",
+      field: 'rating',
+      headerName: 'Rating',
+      type: 'number',
       minWidth: 110,
       flex: 0.2,
 
       cellClassName: (params) => {
-        return params.getValue(params.id, "rating") >= 3
-          ? "greenColor"
-          : "redColor";
-      },
+        return params.getValue(params.id, 'rating') >= 3 ? 'greenColor' : 'redColor';
+      }
     },
 
     {
-      field: "actions",
+      field: 'actions',
       flex: 0.2,
-      headerName: "Actions",
+      headerName: 'Actions',
       minWidth: 120,
-      type: "number",
+      type: 'number',
       sortable: false,
       renderCell: (params) => {
         return (
           <>
-            <DeleteIcon
-              className="productListDelete"
-              onClick={() => handleOpen(params.row._id)}
-            />
+            <DeleteIcon className="productListDelete" onClick={() => handleOpen(params.row.id)} />
           </>
         );
-      },
-    },
+      }
+    }
   ];
 
   return (
@@ -105,16 +96,8 @@ export default function ProductReviewAdmin() {
 
           <div>
             <Star />
-            <input
-              type="text"
-              placeholder="Product Id"
-              required
-              onChange={(e) => setProductId(e.target.value)}
-            />
-            <button
-              onClick={productReviewsSubmitHandler}
-              className="createProductReviewBtn"
-            >
+            <input type="text" placeholder="Product Id" required onChange={(e) => setProductId(e.target.value)} />
+            <button onClick={productReviewsSubmitHandler} className="createProductReviewBtn">
               Search
             </button>
           </div>
@@ -126,7 +109,7 @@ export default function ProductReviewAdmin() {
               rows={productReview}
               columns={columns}
               pageSize={8}
-              getRowId={(row) => row._id}
+              getRowId={(row) => row.id}
               disableSelectionOnClick
               autoHeight
             />
@@ -135,18 +118,14 @@ export default function ProductReviewAdmin() {
                 <Box
                   component="form"
                   sx={{
-                    "& > :not(style)": { m: 1, width: "55ch" },
+                    '& > :not(style)': { m: 1, width: '55ch' }
                   }}
                   noValidate
                   autoComplete="off"
                 >
                   <Grid container>
                     <Grid item xs={8}>
-                      <Typography
-                        id="modal-modal-title"
-                        variant="h6"
-                        component="h6"
-                      >
+                      <Typography id="modal-modal-title" variant="h6" component="h6">
                         Are you sure you want to delete?
                       </Typography>
                     </Grid>
@@ -172,18 +151,18 @@ export default function ProductReviewAdmin() {
 }
 
 const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
   width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
   boxShadow: 24,
-  p: 4,
+  p: 4
 };
 
 const style2 = {
-  display: "flex",
-  justifyContent: "center",
+  display: 'flex',
+  justifyContent: 'center'
 };

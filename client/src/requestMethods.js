@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:5000/';
+const BASE_URL = 'http://25.36.233.239:8080/api';
 
 const user = JSON.parse(localStorage.getItem('persist:root'))?.user;
 

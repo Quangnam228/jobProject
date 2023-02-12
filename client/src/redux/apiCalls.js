@@ -5,7 +5,7 @@ import { publicRequest } from '../requestMethods';
 
 export const login = async (dispatch, user) => {
   try {
-    const res = await publicRequest.post('/auth/login', user);
+    const res = await publicRequest.post('/auth/authenticate', user);
     if (res.data) {
       toast.success('login successfully');
     }

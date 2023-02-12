@@ -1,18 +1,14 @@
-const {
-  verifyToken,
-  verifyTokenAndAuthorization,
-  verifyTokenAndAdmin,
-} = require("../middleware/verifyToken");
-const User = require("../models/User");
-const argon2 = require("argon2");
-const jwt = require("jsonwebtoken");
-const { route } = require("./auth");
+const { verifyToken, verifyTokenAndAuthorization, verifyTokenAndAdmin } = require('../middleware/verifyToken');
+const User = require('../models/User');
+const argon2 = require('argon2');
+const jwt = require('jsonwebtoken');
+const { route } = require('./auth');
 
-const router = require("express").Router();
+const router = require('express').Router();
 
 // create
 
-router.post("/", async (req, res) => {
+router.post('/', async (req, res) => {
   const newUser = new Product(req.body);
 
   try {
@@ -24,12 +20,12 @@ router.post("/", async (req, res) => {
 });
 
 //Update
-router.put("/:id", async (req, res) => {
+router.put('/:id', async (req, res) => {
   try {
     updateUser = await User.findByIdAndUpdate(
       req.params.id,
       {
-        $set: req.body,
+        $set: req.body
       },
       { new: true }
     );
@@ -41,7 +37,7 @@ router.put("/:id", async (req, res) => {
 
 //Update profile
 
-router.put("/update/:id", async (req, res) => {
+router.put('/update/:id', async (req, res) => {
   if (req.body.password) {
     req.body.password = await argon2.hash(req.body.password);
   }
@@ -50,24 +46,24 @@ router.put("/update/:id", async (req, res) => {
     updateUser = await User.findByIdAndUpdate(
       req.params.id,
       {
-        $set: req.body,
+        $set: req.body
       },
       { new: true }
     );
     const accessToken = jwt.sign(
       {
-        id: updateUser._id,
-        isAdmin: updateUser.isAdmin,
+        id: updateUser.id,
+        isAdmin: updateUser.isAdmin
       },
       process.env.JWT_SEC,
       {
-        expiresIn: "3d",
+        expiresIn: '3d'
       }
     );
 
     res.status(200).json({
       updateUser,
-      accessToken,
+      accessToken
     });
   } catch (error) {
     res.status(500).json(error);
@@ -77,19 +73,16 @@ router.put("/update/:id", async (req, res) => {
 //Update password
 
 router.put(
-  "/update/password/:id",
+  '/update/password/:id',
   // verifyTokenAndAuthorization,
   async (req, res) => {
     try {
       user = await User.findById(req.params.id);
 
-      const passwordValid = await argon2.verify(
-        user.password,
-        req.body.password
-      );
+      const passwordValid = await argon2.verify(user.password, req.body.password);
 
       if (!passwordValid) {
-        return res.status(400).json("Incorrect  or password");
+        return res.status(400).json('Incorrect  or password');
       }
 
       if (req.body.newPassword !== req.body.confirmPassword) {
@@ -103,12 +96,12 @@ router.put(
       await user.save();
       const accessToken = jwt.sign(
         {
-          id: user._id,
-          isAdmin: user.isAdmin,
+          id: user.id,
+          isAdmin: user.isAdmin
         },
         process.env.JWT_SEC,
         {
-          expiresIn: "3d",
+          expiresIn: '3d'
         }
       );
       res.status(200).json({ user, accessToken });
@@ -119,47 +112,47 @@ router.put(
 );
 
 // Delete
-router.delete("/:id", async (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
     await User.findByIdAndDelete(req.params.id);
-    res.status(200).json("User has been deleted");
+    res.status(200).json('User has been deleted');
   } catch (error) {
     res.status(500).json(error);
   }
 });
 // Delete men
-router.put("/trash/:id", async (req, res) => {
+router.put('/trash/:id', async (req, res) => {
   try {
     // await User.findByIdAndDelete(req.params.id);
     const user = await User.findById(req.params.id);
     user.trash = true;
     user.save();
-    res.status(200).json("User has been deleted");
+    res.status(200).json('User has been deleted');
   } catch (error) {
     res.status(500).json(error);
   }
 });
 
 //get user
-router.get("/find/:id", async (req, res) => {
+router.get('/find/:id', async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).select("-password");
+    const user = await User.findById(req.params.id).select('-password');
     if (!user) {
-      return res.status(400).json("User not found");
+      return res.status(400).json('User not found');
     }
     res.status(200).json(user);
   } catch (error) {
     console.log(error);
-    res.status(500).json("Internal server error");
+    res.status(500).json('Internal server error');
   }
 });
 
 //get all user
-router.get("/", async (req, res) => {
+router.get('/', async (req, res) => {
   const query = req.query.new;
   try {
     const users = query
-      ? await User.find({ trash: false }).sort({ _id: -1 }).limit(5)
+      ? await User.find({ trash: false }).sort({ id: -1 }).limit(5)
       : await User.find({ trash: false });
     res.status(200).json(users);
   } catch (err) {
@@ -168,13 +161,13 @@ router.get("/", async (req, res) => {
 });
 
 //get all user
-router.get("/allUser", async (req, res) => {
+router.get('/allUser', async (req, res) => {
   try {
     const users = await User.find({ trash: false });
 
     res.status(200).json({
       success: true,
-      users,
+      users
     });
   } catch (err) {
     res.status(500).json(err);
@@ -183,7 +176,7 @@ router.get("/allUser", async (req, res) => {
 
 // get user stats
 
-router.get("/stats", async (req, res) => {
+router.get('/stats', async (req, res) => {
   const date = new Date();
   const lastYear = new Date(date.setFullYear(date.getFullYear() - 1));
 
@@ -192,15 +185,15 @@ router.get("/stats", async (req, res) => {
       { $match: { createdAt: { $gte: lastYear } } },
       {
         $project: {
-          month: { $month: "$createdAt" },
-        },
+          month: { $month: '$createdAt' }
+        }
       },
       {
         $group: {
-          _id: "$month",
-          total: { $sum: 1 },
-        },
-      },
+          id: '$month',
+          total: { $sum: 1 }
+        }
+      }
     ]);
     res.status(200).json(data);
   } catch (err) {

@@ -13,7 +13,7 @@ export default function HomeAdmin() {
     []
   );
   function compare(a, b) {
-    if (a._id > b._id) {
+    if (a.id > b.id) {
       return 1;
     } else {
       return -1;
@@ -23,21 +23,19 @@ export default function HomeAdmin() {
   useEffect(() => {
     const getStats = async () => {
       try {
-        const res = await userRequest.get('/users/stats');
-        res.data.sort(compare);
-        res.data.map((item) =>
-          setUserStats((prev) => [...prev, { name: MONTHS[item._id - 1], 'new User': item.total }])
-        );
+        const res = await userRequest.get('/user/stats');
+        for (const item in res.data) {
+          setUserStats((prev) => [...prev, { name: MONTHS[item - 1], 'new User': res.data[item] }]);
+        }
       } catch (error) {}
     };
     getStats();
     const getOrder = async () => {
       try {
-        const res = await userRequest.get('/orders/stats');
-        res.data.sort(compare);
-        res.data.map((item) =>
-          setOrderMonths((prev) => [...prev, { name: MONTHS[item._id - 1], Revenue: item.total }])
-        );
+        const res = await userRequest.get('/order/order/stats');
+        for (const property in res.data) {
+          setOrderMonths((prev) => [...prev, { name: MONTHS[property - 1], Revenue: res.data[property] }]);
+        }
       } catch (error) {}
     };
     getOrder();

@@ -1,20 +1,15 @@
-import { Link, useLocation } from "react-router-dom";
-import "./product.css";
-import Chart from "../../components/chart/Chart";
-import { Publish } from "@material-ui/icons";
-import { useSelector, useDispatch } from "react-redux";
-import { useEffect, useMemo, useState } from "react";
-import { userRequest } from "../../requestMethods";
-import {
-  getStorage,
-  ref,
-  uploadBytesResumable,
-  getDownloadURL,
-} from "firebase/storage";
-import app from "../../firebase";
+import { Link, useLocation } from 'react-router-dom';
+import './product.css';
+import Chart from '../../components/chart/Chart';
+import { Publish } from '@material-ui/icons';
+import { useSelector, useDispatch } from 'react-redux';
+import { useEffect, useMemo, useState } from 'react';
+import { userRequest } from '../../requestMethods';
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import app from '../../firebase';
 
-import { updateProduct } from "../../redux/apiCallsAdmin";
-import { toast } from "react-toastify";
+import { updateProduct } from '../../redux/apiCallsAdmin';
+import { toast } from 'react-toastify';
 
 export default function ProductAdmin() {
   const [inputs, setInputs] = useState({});
@@ -27,47 +22,25 @@ export default function ProductAdmin() {
 
   const [pStats, setPStats] = useState([]);
   const location = useLocation();
-  const productId = location.pathname.split("/")[3];
-  const product = useSelector((state) =>
-    state.productAdmin.products.find((product) => product._id === productId)
-  );
+  const productId = location.pathname.split('/')[3];
+  const product = useSelector((state) => state.productAdmin.products.find((product) => product.id === productId));
   const [avatarPreview, setAvatarPreview] = useState(
-    product?.image
-      ? product?.image
-      : "https://crowd-literature.eu/wp-content/uploads/2015/01/no-avatar.gif"
+    product?.image ? product?.image : 'https://crowd-literature.eu/wp-content/uploads/2015/01/no-avatar.gif'
   );
 
   console.log(product?.inventory);
   const MONTHS = useMemo(
-    () => [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Agu",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ],
+    () => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Agu', 'Sep', 'Oct', 'Nov', 'Dec'],
     []
   );
   useEffect(() => {
     const getStats = async () => {
       try {
-        const res = await userRequest.get("orders/income?pid=" + productId);
+        const res = await userRequest.get('orders/income?pid=' + productId);
         const list = res.data.sort((a, b) => {
-          return a._id - b._id;
+          return a.id - b.id;
         });
-        list.map((item) =>
-          setPStats((prev) => [
-            ...prev,
-            { name: MONTHS[item._id - 1], Sales: item.total },
-          ])
-        );
+        list.map((item) => setPStats((prev) => [...prev, { name: MONTHS[item.id - 1], Sales: item.total }]));
       } catch (err) {
         console.log(err);
       }
@@ -94,19 +67,19 @@ export default function ProductAdmin() {
     });
   };
   const handleCategory = (e) => {
-    setCat(e.target.value.split(","));
+    setCat(e.target.value.split(','));
   };
 
   const handleColor = (e) => {
-    setColor(e.target.value.split(","));
+    setColor(e.target.value.split(','));
   };
 
   const handleSize = (e) => {
-    setSize(e.target.value.split(","));
+    setSize(e.target.value.split(','));
   };
 
   const handleStock = (e) => {
-    setStock(e.target.value.split(","));
+    setStock(e.target.value.split(','));
   };
 
   const handleClick = (e) => {
@@ -119,45 +92,41 @@ export default function ProductAdmin() {
       color.length < 1 ||
       // size.length < 1 ||
       stock.length < 1 ||
-      inputs.title === "" ||
-      inputs.decs === ""
+      inputs.title === '' ||
+      inputs.decs === ''
     ) {
-      toast.warning("You need to enter all the information");
+      toast.warning('You need to enter all the information');
       return;
     }
     let booleanCategory = false;
     product.categories.forEach((category) => {
-      if (category === "accessory") {
+      if (category === 'accessory') {
         return (booleanCategory = true);
       }
     });
     if (!booleanCategory) {
       if (color.length !== size.length || color.length !== stock.length) {
-        toast.warning(
-          "the length of the fields in the inventory must be equal"
-        );
+        toast.warning('the length of the fields in the inventory must be equal');
         return;
       } else {
         for (let i = 0; i < color.length; i++) {
           inventory.push({
             color: color[i],
             size: size[i],
-            stock: parseInt(stock[i]),
+            stock: parseInt(stock[i])
           });
         }
       }
     } else {
       if (color.length !== stock.length) {
-        toast.warning(
-          "the length of the fields in the inventory must be equal"
-        );
+        toast.warning('the length of the fields in the inventory must be equal');
         return;
       } else {
         for (let i = 0; i < color.length; i++) {
           inventory.push({
             color: color[i],
             // size: size[i],
-            stock: parseInt(stock[i]),
+            stock: parseInt(stock[i])
           });
         }
       }
@@ -170,17 +139,16 @@ export default function ProductAdmin() {
       const uploadTask = uploadBytesResumable(storageRef, file);
 
       uploadTask.on(
-        "state_changed",
+        'state_changed',
         (snapshot) => {
-          const progress =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log("Upload is " + progress + "% done");
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log('Upload is ' + progress + '% done');
           switch (snapshot.state) {
-            case "paused":
-              console.log("Upload is paused");
+            case 'paused':
+              console.log('Upload is paused');
               break;
-            case "running":
-              console.log("Upload is running");
+            case 'running':
+              console.log('Upload is running');
               break;
             default:
           }
@@ -189,11 +157,11 @@ export default function ProductAdmin() {
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
             const productUpdate = {
-              _id: productId,
+              id: productId,
               ...inputs,
               image: downloadURL,
               categories: cat,
-              inventory: inventory,
+              inventory: inventory
             };
             updateProduct(productId, productUpdate, dispatch);
           });
@@ -201,11 +169,11 @@ export default function ProductAdmin() {
       );
     } else {
       const productUpdate = {
-        _id: productId,
+        id: productId,
         ...inputs,
         image: imageUpdate,
         categories: cat,
-        inventory: inventory,
+        inventory: inventory
       };
       updateProduct(productId, productUpdate, dispatch);
     }
@@ -225,7 +193,7 @@ export default function ProductAdmin() {
           <div className="productInfoBottom">
             <div className="productInfoItem">
               <span className="productInfoKey">id:</span>
-              <span className="productInfoValue">{product?._id}</span>
+              <span className="productInfoValue">{product?.id}</span>
             </div>
             <div className="productInfoItem">
               <span className="productInfoKey">name:</span>
@@ -242,31 +210,13 @@ export default function ProductAdmin() {
         <form className="productForm">
           <div className="productFormLeft">
             <label>Product Name</label>
-            <input
-              type="text"
-              placeholder={product?.title}
-              name="title"
-              onChange={handleChange}
-            />
+            <input type="text" placeholder={product?.title} name="title" onChange={handleChange} />
             <label>Product Desc</label>
-            <input
-              type="text"
-              placeholder={product?.desc}
-              name="desc"
-              onChange={handleChange}
-            />
+            <input type="text" placeholder={product?.desc} name="desc" onChange={handleChange} />
             <label>Product price</label>
-            <input
-              type="text"
-              placeholder={product?.price}
-              onChange={handleChange}
-            />
+            <input type="text" placeholder={product?.price} onChange={handleChange} />
             <label>Product categories</label>
-            <input
-              type="text"
-              placeholder={product?.categories}
-              onChange={handleCategory}
-            />
+            <input type="text" placeholder={product?.categories} onChange={handleCategory} />
             <label>Product Inventory</label>
             <label>Color</label>
             <input type="text" placeholder="" onChange={handleColor} />
@@ -278,20 +228,11 @@ export default function ProductAdmin() {
 
           <div className="productFormRight">
             <div className="productUpload">
-              <img
-                src={avatarPreview}
-                alt="Avatar Preview"
-                className="userUpdateImg"
-              />
+              <img src={avatarPreview} alt="Avatar Preview" className="userUpdateImg" />
               <label htmlFor="file">
                 <Publish className="userUpdateIcon" />
               </label>
-              <input
-                type="file"
-                id="file"
-                style={{ display: "none" }}
-                onChange={updateProfileDataChange}
-              />
+              <input type="file" id="file" style={{ display: 'none' }} onChange={updateProfileDataChange} />
             </div>
             <button className="productButton" onClick={handleClick}>
               Update

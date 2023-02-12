@@ -53,7 +53,7 @@ import { toast } from 'react-toastify';
 export const login = async (dispatch, user) => {
   dispatch(loginStart());
   try {
-    const res = await publicRequest.post('/auth/login', user);
+    const res = await publicRequest.post('/auth/authenticate', user);
     console.log(res);
     dispatch(loginSuccess(res.data));
   } catch (error) {
@@ -109,7 +109,7 @@ export const addProduct = async (product, dispatch) => {
 export const getUsers = async (dispatch) => {
   dispatch(getUsersStart());
   try {
-    const res = await userRequest.get('/users');
+    const res = await userRequest.get('/user');
     console.log(res.data);
     dispatch(getUsersSuccess(res.data));
   } catch (err) {
@@ -151,7 +151,7 @@ export const addUser = async (user, dispatch) => {
       toast.error(res.data.message);
     }
     const members = {
-      senderId: `${res.data?.user._id}`,
+      senderId: `${res.data?.user.id}`,
       receiverId: '61dbdc1246405e02170092a9'
     };
     await publicRequest.post('/conversations', members);
@@ -167,7 +167,7 @@ export const addUser = async (user, dispatch) => {
 export const getOrders = async (dispatch) => {
   dispatch(getOrderStart());
   try {
-    const res = await userRequest.get('/orders');
+    const res = await userRequest.get('/order/order', { params: { size: 100000 } });
     dispatch(getOrderSuccess(res.data));
   } catch (err) {
     dispatch(getOrderFailure());

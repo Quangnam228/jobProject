@@ -1,17 +1,12 @@
-import { MailOutline, Publish } from "@material-ui/icons";
-import "./user.css";
-import { Link, useLocation } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import {
-  getStorage,
-  ref,
-  uploadBytesResumable,
-  getDownloadURL,
-} from "firebase/storage";
-import app from "../../firebase";
-import { updateUser } from "../../redux/apiCallsAdmin";
-import { useState } from "react";
-import { toast } from "react-toastify";
+import { MailOutline, Publish } from '@material-ui/icons';
+import './user.css';
+import { Link, useLocation } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import app from '../../firebase';
+import { updateUser } from '../../redux/apiCallsAdmin';
+import { useState } from 'react';
+import { toast } from 'react-toastify';
 
 export default function UserAdmin() {
   const [inputs, setInputs] = useState({});
@@ -21,11 +16,9 @@ export default function UserAdmin() {
   const dispatch = useDispatch();
 
   const location = useLocation();
-  const userId = location.pathname.split("/")[3];
+  const userId = location.pathname.split('/')[3];
 
-  const user = useSelector((state) =>
-    state.usersAdmin.users.find((user) => user._id === userId)
-  );
+  const user = useSelector((state) => state.usersAdmin.users.find((user) => user.id === userId));
   const handleChange = (e) => {
     setInputs((prev) => {
       return { ...prev, [e.target.name]: e.target.value };
@@ -33,9 +26,7 @@ export default function UserAdmin() {
   };
 
   const [avatarPreview, setAvatarPreview] = useState(
-    user.img
-      ? user.img
-      : "https://crowd-literature.eu/wp-content/uploads/2015/01/no-avatar.gif"
+    user.img ? user.img : 'https://crowd-literature.eu/wp-content/uploads/2015/01/no-avatar.gif'
   );
 
   const updateProfileDataChange = (e) => {
@@ -59,22 +50,21 @@ export default function UserAdmin() {
       const storage = getStorage(app);
       const storageRef = ref(storage, fileName);
       const uploadTask = uploadBytesResumable(storageRef, file);
-      if (inputs.password === "" || inputs.isAdmin === "") {
-        toast.warning("You have not entered all the information");
+      if (inputs.password === '' || inputs.isAdmin === '') {
+        toast.warning('You have not entered all the information');
         return;
       }
       uploadTask.on(
-        "state_changed",
+        'state_changed',
         (snapshot) => {
-          const progress =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log("Upload is " + progress + "% done");
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log('Upload is ' + progress + '% done');
           switch (snapshot.state) {
-            case "paused":
-              console.log("Upload is paused");
+            case 'paused':
+              console.log('Upload is paused');
               break;
-            case "running":
-              console.log("Upload is running");
+            case 'running':
+              console.log('Upload is running');
               break;
             default:
           }
@@ -85,11 +75,11 @@ export default function UserAdmin() {
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
             const userUpdate = {
-              _id: userId,
+              id: userId,
               ...inputs,
               username: user.username,
               email: user.email,
-              img: downloadURL,
+              img: downloadURL
             };
             updateUser(userId, userUpdate, dispatch);
           });
@@ -97,11 +87,11 @@ export default function UserAdmin() {
       );
     } else {
       const userUpdate = {
-        _id: userId,
+        id: userId,
         ...inputs,
         username: user.username,
         email: user.email,
-        img: imageUpdate,
+        img: imageUpdate
       };
       updateUser(userId, userUpdate, dispatch);
     }
@@ -114,11 +104,7 @@ export default function UserAdmin() {
         <div className="userShow">
           <div className="userShowTop">
             <img
-              src={
-                user.img
-                  ? user.img
-                  : "https://crowd-literature.eu/wp-content/uploads/2015/01/no-avatar.gif"
-              }
+              src={user.img ? user.img : 'https://crowd-literature.eu/wp-content/uploads/2015/01/no-avatar.gif'}
               alt=""
               className="userShowImg"
             />
@@ -141,23 +127,11 @@ export default function UserAdmin() {
             <div className="userUpdateLeft">
               <div className="userUpdateItem">
                 <label>Username</label>
-                <input
-                  type="text"
-                  value={user.username}
-                  name="username"
-                  disabled
-                  className="userUpdateInput"
-                />
+                <input type="text" value={user.username} name="username" disabled className="userUpdateInput" />
               </div>
               <div className="userUpdateItem">
                 <label>Email</label>
-                <input
-                  type="text"
-                  value={user.email}
-                  name="email"
-                  className="userUpdateInput"
-                  disabled
-                />
+                <input type="text" value={user.email} name="email" className="userUpdateInput" disabled />
               </div>
               <div className="userUpdateItem">
                 <label>Password</label>
@@ -171,12 +145,7 @@ export default function UserAdmin() {
               </div>
               <div className="userUpdateItem">
                 <label>Admin</label>
-                <select
-                  id="isAdmin"
-                  name="isAdmin"
-                  className="userUpdateInput"
-                  onChange={handleChange}
-                >
+                <select id="isAdmin" name="isAdmin" className="userUpdateInput" onChange={handleChange}>
                   <option value="true">Yes</option>
                   <option value="false">No</option>
                 </select>
@@ -184,20 +153,11 @@ export default function UserAdmin() {
             </div>
             <div className="userUpdateRight">
               <div className="userUpdateUpload">
-                <img
-                  src={avatarPreview}
-                  alt="Avatar Preview"
-                  className="userUpdateImg"
-                />
+                <img src={avatarPreview} alt="Avatar Preview" className="userUpdateImg" />
                 <label htmlFor="file">
                   <Publish className="userUpdateIcon" />
                 </label>
-                <input
-                  type="file"
-                  id="file"
-                  style={{ display: "none" }}
-                  onChange={updateProfileDataChange}
-                />
+                <input type="file" id="file" style={{ display: 'none' }} onChange={updateProfileDataChange} />
               </div>
               <button className="userUpdateButton" onClick={handleClick}>
                 Update

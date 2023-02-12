@@ -36,7 +36,7 @@ export default function MyOrder() {
   const getMyOrder = () => {
     order.map((item) => {
       if (
-        user._id === item.userId
+        user.id === item.userId
         // && item.status === "pending"
       ) {
         ItIsOrderMe.push(item);
@@ -52,18 +52,18 @@ export default function MyOrder() {
 
   const handleDelete = (id) => {
     isOrder.map((orderStatus) => {
-      if (orderStatus._id === id && orderStatus.status === 'pending') {
+      if (orderStatus.id === id && orderStatus.status === 'pending') {
         setOpen(false);
         deleteOrder(id, dispatch);
       }
-      // else if (orderStatus._id === id && orderStatus.status === "approved") {
+      // else if (orderStatus.id === id && orderStatus.status === "approved") {
       //   alert("order này ko thể xóa");
       // }
     });
   };
 
   const columns = [
-    { field: '_id', headerName: 'ID', width: 220 },
+    { field: 'id', headerName: 'ID', width: 220 },
 
     { field: 'amount', headerName: 'amount', width: 200 },
     {
@@ -86,11 +86,11 @@ export default function MyOrder() {
       renderCell: (params) => {
         return (
           <>
-            {/* <Link to={"/orderDetail/" + params.row._id}>
+            {/* <Link to={"/orderDetail/" + params.row.id}>
               <button className="myOrderListEdit">View</button>
             </Link> */}
             {params.row.status === 'pending' ? (
-              <DeleteOutline className="myOrderListDelete" onClick={() => handleOpen(params.row._id)} />
+              <DeleteOutline className="myOrderListDelete" onClick={() => handleOpen(params.row.id)} />
             ) : (
               <DeleteOutline className="myOrderNoDelete" />
             )}
@@ -104,9 +104,9 @@ export default function MyOrder() {
 
   isOrder &&
     isOrder.forEach((item) => {
-      item.userId === user._id &&
+      item.userId === user.id &&
         rows.push({
-          _id: item._id,
+          id: item.id,
           userName: user.username,
           amount: item.amount,
           status: item.status,
@@ -125,7 +125,7 @@ export default function MyOrder() {
           rows={rows}
           disableSelectionOnClick
           columns={columns}
-          getRowId={(row) => row._id}
+          getRowId={(row) => row.id}
           pageSize={8}
           checkboxSelection
         />

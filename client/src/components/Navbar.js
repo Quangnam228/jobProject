@@ -28,7 +28,7 @@ function Navbar() {
               alt="avatar"
               className="imgNavbar"
             />
-            <span className="navbarUserName">{user.username}</span>
+            <span className="navbarUserName">{user.lastname}</span>
             <ul className="navbarUserMenu">
               <li className="navbarUserMenuItem">
                 <a href="/account">Profile</a>

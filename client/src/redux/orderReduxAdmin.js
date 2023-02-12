@@ -1,11 +1,11 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 export const orderSlice = createSlice({
-  name: "order",
+  name: 'order',
   initialState: {
     orders: [],
     isFetching: false,
-    error: false,
+    error: false
   },
   reducers: {
     //get all
@@ -30,7 +30,7 @@ export const orderSlice = createSlice({
     deleteOrderSuccess: (state, action) => {
       state.isFetching = false;
       state.orders.splice(
-        state.orders.findIndex((item) => item._id === action.payload),
+        state.orders.findIndex((item) => item.id === action.payload),
         1
       );
     },
@@ -45,15 +45,14 @@ export const orderSlice = createSlice({
     },
     updateOrderSuccess: (state, action) => {
       state.isFetching = false;
-      state.orders[
-        state.orders.findIndex((item) => item._id === action.payload.id)
-      ].status = action.payload.status.status;
+      state.orders[state.orders.findIndex((item) => item.id === action.payload.id)].status =
+        action.payload.status.status;
     },
     updateOrderFailure: (state) => {
       state.isFetching = false;
       state.error = true;
-    },
-  },
+    }
+  }
 });
 
 export const {
@@ -65,6 +64,6 @@ export const {
   deleteOrderFailure,
   updateOrderStart,
   updateOrderSuccess,
-  updateOrderFailure,
+  updateOrderFailure
 } = orderSlice.actions;
 export default orderSlice.reducer;

@@ -9,47 +9,40 @@ export default function FeaturedInfo() {
   const [income, setIncome] = useState([]);
   const [perc, setPerc] = useState(0);
   const [total, setTotal] = useState(0);
+  const [users, setUsers] = useState();
+  const [products, setProduct] = useState();
   // const dispatch = useDispatch();
-  const products = useSelector((state) => state.productAdmin.products);
-  const user = useSelector((state) => state.usersAdmin.users);
-  const order = useSelector((state) => state.orderAdmin.orders);
+
+  useEffect(() => {
+    const callApi = async () => {
+      const user = await userRequest.get('/user');
+      setUsers(user);
+      const total = await userRequest.get('/order/order/totalIncome');
+      console.log(total.data);
+      setTotal(total.data);
+      const product = await userRequest.get('/catalog/products');
+      console.log(product.data);
+      setProduct(product.data);
+    };
+    callApi();
+  }, []);
 
   // const order = order.filter((od) => {
   //   return od.status === "approved";
   // });
-
   useEffect(() => {
     const getIncome = async () => {
       try {
-        const res = await publicRequest.get('orders/income');
-        console.log(res.data);
+        const res = await publicRequest.get('order/order/income');
+        console.log(res.data[0]);
         setIncome(res.data);
-        setPerc((res.data[0].total * 100) / res.data[1].total - 100);
+        setPerc((res.data[1] * 100) / res.data[0] - 100);
       } catch {}
     };
 
     getIncome();
-    const TotalPrice = async () => {
-      let total = 0;
-      order.forEach((od) => {
-        if (od.status === 'delivered') {
-          total += od.amount;
-        }
-      });
-      setTotal(total);
-    };
-    TotalPrice();
-  }, [order]);
+  }, []);
 
-  function compare(a, b) {
-    if (a._id < b._id) {
-      return 1;
-    } else {
-      return -1;
-    }
-  }
-
-  income.sort(compare);
   return (
     <div className="featured">
       <div className="featuredItem">
@@ -67,7 +60,7 @@ export default function FeaturedInfo() {
       <div className="featuredItem">
         <span className="featuredTitle">User</span>
         <div className="featuredMoneyContainer">
-          <span className="featuredMoney">{user.length}</span>
+          <span className="featuredMoney">{users?.data?.length}</span>
           <span className="featuredMoneyRate"></span>
         </div>
 
@@ -78,7 +71,7 @@ export default function FeaturedInfo() {
       <div className="featuredItem">
         <span className="featuredTitle">Product</span>
         <div className="featuredMoneyContainer">
-          <span className="featuredMoney">{products.length}</span>
+          <span className="featuredMoney">{products?.totalItems}</span>
           <span className="featuredMoneyRate"></span>
         </div>
 
@@ -89,7 +82,7 @@ export default function FeaturedInfo() {
       <div className="featuredItem">
         <span className="featuredTitle">Total Revenue</span>
         <div className="featuredMoneyContainer">
-          <span className="featuredMoney">${total}</span>
+          <span className="featuredMoney">{total}VND</span>
         </div>
       </div>
     </div>

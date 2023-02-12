@@ -1,4 +1,4 @@
-import "./sidebar.css";
+import './sidebar.css';
 import {
   LineStyle,
   PermIdentity,
@@ -6,10 +6,10 @@ import {
   AttachMoney,
   DynamicFeed,
   ChatBubbleOutline,
-  DeleteSweep,
-} from "@material-ui/icons";
-import MotorcycleIcon from "@material-ui/icons/Motorcycle";
-import { Link } from "react-router-dom";
+  DeleteSweep
+} from '@material-ui/icons';
+import MotorcycleIcon from '@material-ui/icons/Motorcycle';
+import { Link } from 'react-router-dom';
 
 export default function Sidebar() {
   return (
@@ -45,12 +45,6 @@ export default function Sidebar() {
               <li className="sidebarListItem">
                 <AttachMoney className="sidebarIcon" />
                 Order
-              </li>
-            </Link>
-            <Link to="/admin/delivery" className="link">
-              <li className="sidebarListItem">
-                <MotorcycleIcon className="sidebarIcon" />
-                Delivery
               </li>
             </Link>
             <Link to="/admin/reviewProduct" className="link">

@@ -15,12 +15,12 @@ export default function UserListAdmin() {
     getUsers(dispatch);
   }, [dispatch]);
 
-  const handleDelete = (id) => {
-    deleteUser(id, dispatch);
-  };
+  // const handleDelete = (id) => {
+  //   deleteUser(id, dispatch);
+  // };
 
   const columns = [
-    { field: '_id', headerName: 'ID', width: 220 },
+    { field: 'id', headerName: 'ID', width: 220 },
     {
       field: 'user',
       headerName: 'User',
@@ -35,30 +35,26 @@ export default function UserListAdmin() {
               }
               alt=""
             />
-            {params.row.username}
+
+            {`${params.row.firstname} `}
+            {params.row.lastname}
           </div>
         );
       }
     },
-    { field: 'email', headerName: 'Email', width: 200 },
-
-    {
-      field: 'isAdmin',
-      headerName: 'isAdmin',
-      width: 160
-    },
-    {
-      field: 'action',
-      headerName: 'Action',
-      width: 150,
-      renderCell: (params) => {
-        return (
-          <>
-            <DeleteOutline className="userListDelete" onClick={() => handleDelete(params.row._id)} />
-          </>
-        );
-      }
-    }
+    { field: 'email', headerName: 'Email', width: 200 }
+    // {
+    //   field: 'action',
+    //   headerName: 'Action',
+    //   width: 150,
+    //   renderCell: (params) => {
+    //     return (
+    //       <>
+    //         <DeleteOutline className="userListDelete" onClick={() => handleDelete(params.row.id)} />
+    //       </>
+    //     );
+    //   }
+    // }
   ];
 
   return (
@@ -71,7 +67,7 @@ export default function UserListAdmin() {
         disableSelectionOnClick
         columns={columns}
         pageSize={8}
-        getRowId={(row) => row._id}
+        getRowId={(row) => row.id}
         checkboxSelection
       />
     </div>

@@ -1,11 +1,11 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 export const productSlice = createSlice({
-  name: "product",
+  name: 'product',
   initialState: {
     products: [],
     isFetching: false,
-    error: false,
+    error: false
   },
   reducers: {
     //get all
@@ -29,7 +29,7 @@ export const productSlice = createSlice({
     deleteProductSuccess: (state, action) => {
       state.isFetching = false;
       state.products.splice(
-        state.products.findIndex((item) => item._id === action.payload),
+        state.products.findIndex((item) => item.id === action.payload),
         1
       );
     },
@@ -44,9 +44,7 @@ export const productSlice = createSlice({
     },
     updateProductSuccess: (state, action) => {
       state.isFetching = false;
-      state.products[
-        state.products.findIndex((item) => item._id === action.payload.id)
-      ] = action.payload.product;
+      state.products[state.products.findIndex((item) => item.id === action.payload.id)] = action.payload.product;
       state.error = false;
     },
     updateProductFailure: (state) => {
@@ -66,8 +64,8 @@ export const productSlice = createSlice({
     addProductFailure: (state) => {
       state.isFetching = false;
       state.error = true;
-    },
-  },
+    }
+  }
 });
 
 export const {
@@ -82,6 +80,6 @@ export const {
   updateProductFailure,
   addProductStart,
   addProductSuccess,
-  addProductFailure,
+  addProductFailure
 } = productSlice.actions;
 export default productSlice.reducer;

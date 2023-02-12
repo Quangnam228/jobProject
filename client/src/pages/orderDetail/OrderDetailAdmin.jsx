@@ -1,42 +1,20 @@
-import React, { useEffect, useState } from "react";
-import "./orderDetail.css";
-import { Link, useLocation } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { updateOrder } from "../../redux/apiCallsAdmin";
+import React, { useEffect, useState } from 'react';
+import './orderDetail.css';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { userRequest } from '../../requestMethods';
+import { toast } from 'react-toastify';
 
 export default function OrderDetailAdmin() {
-  const dispatch = useDispatch();
   const location = useLocation();
-  const orderId = location.pathname.split("/")[3];
-  const order = useSelector((state) =>
-    state.orderAdmin.orders.find((order) => order._id === orderId)
-  );
-  const users = useSelector((state) => state.usersAdmin.users);
-  const product = useSelector((state) => state.productAdmin.products);
-  const [productState, setProductState] = useState([]);
-  const [quantityState, setQuantityState] = useState([]);
-  console.log(order);
-
-  let arr = [];
-  let quantityProduct = [];
-  let address = order.address.line1
-    ? order.address.line1
-    : order.address.address;
-
+  const orderId = location.pathname.split('/')[3];
+  const [orderDetail, setOrderDetail] = useState();
+  const navigate = useNavigate();
   useEffect(() => {
-    const getProduct = () => {
-      order.products.map((item) => {
-        product.map((i) => {
-          if (i._id === item.productId) {
-            arr.push(i);
-            quantityProduct.push(item.quantity);
-          }
-        });
-      });
+    const order = async () => {
+      const data = await userRequest.get(`/order/order/code/${orderId}`);
+      setOrderDetail(data?.data);
     };
-    getProduct();
-    setProductState(arr);
-    setQuantityState(quantityProduct);
+    order();
   }, []);
 
   const [inputs, setInputs] = useState({});
@@ -46,49 +24,25 @@ export default function OrderDetailAdmin() {
       return { ...prev, [e.target.name]: e.target.value };
     });
   };
-  const handleClick = (e) => {
+  const handleClick = async (e) => {
     e.preventDefault();
-    updateOrder(orderId, inputs, dispatch);
-  };
+    await userRequest.post(`/order/order/change-status/${orderId}`, {}, { params: { status: inputs?.status } });
 
+    toast.success('cập nhât trạng thái thành công');
+    navigate('/admin/orders');
+  };
   const handleShowProduct = () => {
-    // console.log(productState);
-    // console.log(order.products);
     return (
       <>
-        {/* {productState.map((item, index) => (
-          <div key={item.product}>
-            <img src={item.image} alt="Product" />
-            <span>{item.title}</span>{" "}
-            <span>
-              {quantityState[index]} x ${item.price} = <b>${item.price * quantityState[index]}</b>
-            </span>
-          </div>
-        ))} */}
-        {order.products.map((item, index) =>
-          productState.map((i) => {
-            console.log(item);
-            console.log(i);
-            if (item.productId === i._id) {
-              return (
-                <>
-                  <div key={item._id}>
-                    <img src={i.image} alt="Product" />
-                    <div className="orderShowItem">
-                      <div className="orderShowItemSize">{item.size}</div>
-                      <div className="orderShowItemColor">{item.color}</div>
-                    </div>
-                    <span>{i.title}</span>{" "}
-                    <span>
-                      {quantityState[index]} x ${i.price} ={" "}
-                      <b>${i.price * quantityState[index]}</b>
-                    </span>
-                  </div>
-                </>
-              );
-            }
-          })
-        )}
+        {orderDetail?.cartItems.map((item, index) => (
+          <>
+            <div key={item.productDto.code}>
+              <img src={item.productDto.imgUrl} alt="Product" />
+              <span>{item.productDto.description}</span>
+              <span>Giá {item.inventoryItem.retailPrice}</span>
+            </div>
+          </>
+        ))}
       </>
     );
   };
@@ -106,53 +60,38 @@ export default function OrderDetailAdmin() {
             <span className="orderShowTitle">Order Details</span>
 
             <div className="orderShowInfo">
+              <span className="orderShowInfoTitle">{/* {`Id: `} {orderDetail.id} */}</span>
+            </div>
+            <div className="orderShowInfo">
               <span className="orderShowInfoTitle">
-                {`Id: `} {order._id}
+                {`Khách hàng: `}
+                {orderDetail?.name}
+              </span>
+            </div>
+            <div className="orderShowInfo">
+              <span className="orderShowInfoTitle">Giá {orderDetail?.totals}VND</span>
+            </div>
+            <div className="orderShowInfo">
+              <span className="orderShowInfoTitle">
+                {`Trạng thái: `} {orderDetail?.status}
               </span>
             </div>
             <div className="orderShowInfo">
               <span className="orderShowInfoTitle">
-                {`Customer: `}
-                {users.map((u) => {
-                  if (order.userId === u._id) {
-                    return u.username;
-                  }
-                })}
+                {`Địa chỉ: `} {orderDetail?.address}
               </span>
             </div>
-            <div className="orderShowInfo">
-              <span className="orderShowInfoTitle">
-                {`Amount: $`} {order.amount}
-              </span>
-            </div>
-            <div className="orderShowInfo">
-              <span className="orderShowInfoTitle">
-                {`Status: `} {order.status}
-              </span>
-            </div>
-            <div className="orderShowInfo">
-              <span className="orderShowInfoTitle">
-                {`Address: `} {address}
-              </span>
-            </div>
-            <div className="orderShowInfo confirmCartItemsContainer">
-              {handleShowProduct()}
-            </div>
+            <div className="orderShowInfo confirmCartItemsContainer">{handleShowProduct()}</div>
           </div>
         </div>
         <div className="orderUpdate">
           <span className="orderUpdateTitle">Edit</span>
-          {order.status === "pending" ? (
+          {orderDetail?.status === 'pending' ? (
             <form className="orderUpdateForm">
               <div className="orderUpdateLeft">
                 <div className="orderUpdateItem">
                   <label>status</label>
-                  <select
-                    id="isAdmin"
-                    className="orderUpdateInput"
-                    onChange={handleChange}
-                    name="status"
-                  >
+                  <select id="isAdmin" className="orderUpdateInput" onChange={handleChange} name="status">
                     <option name="status" value="pending">
                       Pending
                     </option>
@@ -179,12 +118,7 @@ export default function OrderDetailAdmin() {
               <div className="orderUpdateLeft">
                 <div className="orderUpdateItem">
                   <label>status</label>
-                  <select
-                    id="isAdmin"
-                    className="orderUpdateInput"
-                    onChange={handleChange}
-                    name="status"
-                  >
+                  <select id="isAdmin" className="orderUpdateInput" onChange={handleChange} name="status">
                     <option name="status" value="approved">
                       Approved
                     </option>
