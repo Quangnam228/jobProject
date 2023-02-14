@@ -1,53 +1,125 @@
 import './newProduct.css';
 import { useState, useEffect } from 'react';
-import { addProduct } from '../../redux/apiCallsAdmin';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { useMemo } from 'react';
+import { userRequest } from '../../requestMethods';
 
 export default function NewProductAdmin() {
   const [inputs, setInputs] = useState({});
-  const [data, setData] = useState();
-  const [inputsInventory, setInputsInventory] = useState({});
   const [file, setFile] = useState(null);
+  const [brands, setBrands] = useState();
+  const [category, setCategory] = useState();
+  const [attribute, setAttribute] = useState();
+  const [productInventories, setProductInventories] = useState([
+    {
+      attributeValues: [{ productAttribute: '', value: '' }],
+      retailPrice: null,
+      units: null
+    }
+  ]);
+  useEffect(() => {
+    const callApi = async () => {
+      const brand = await userRequest.get('catalog/brands');
+      setBrands(brand.data.map((item) => ({ label: item.name, value: item.code })));
+      const category = await userRequest.get('catalog/categories');
+      setCategory(category.data.map((item) => ({ label: item.name, value: item.code })));
+      const att = await userRequest.get('/inventories/product-attributes');
+      setAttribute(att.data.map((item) => ({ label: item.name, value: item.code })));
+    };
+    callApi();
+  }, []);
+  const productInventory = useMemo(() => JSON.parse(JSON.stringify(productInventories)), [productInventories]);
   const navigate = useNavigate();
 
-  const { error } = useSelector((state) => state.productAdmin);
   const handleChange = (e) => {
     setInputs((prev) => {
       return { ...prev, [e.target.name]: e.target.value };
     });
   };
 
-  const handleChangeProductInventories = (e, index) => {
-    let newData = [...inventories];
-    newData.map((item) => {
-      if (item.key === index && e.target.name === 'productAttribute') {
-        item.productAttribute = e.target.value;
-      }
-      if (item.key === index && e.target.name === 'value') {
-        item.value = e.target.value;
-      }
+  const handleChangeProductInventories = (e, index, indexAttr) => {
+    const newData = [...productInventory];
+    if (e.target.name === 'productAttribute') {
+      newData[index].attributeValues[indexAttr].productAttribute = e.target.value;
+    }
+    if (e.target.name === 'value') {
+      newData[index].attributeValues[indexAttr].value = e.target.value;
+    }
+    setProductInventories(newData);
+  };
+
+  const handleChangeProductInven = (e, index) => {
+    const newData = [...productInventory];
+    if (e.target.name === 'retailPrice') {
+      newData[index].retailPrice = e.target.value;
+    }
+    if (e.target.name === 'units') {
+      newData[index].units = e.target.value;
+    }
+    setProductInventories(newData);
+  };
+
+  const handleAdd = (e, index, indexAttr) => {
+    e.preventDefault();
+    const newData = { productAttribute: '', value: '' };
+    productInventory[index].attributeValues.push(newData);
+    setProductInventories(productInventory);
+  };
+  const handleAddProductInventories = (e) => {
+    e.preventDefault();
+    const newData = {
+      attributeValues: [{ productAttribute: '', value: '' }],
+      retailPrice: null,
+      units: null
+    };
+    setProductInventories([...productInventories, newData]);
+  };
+  const handleDeleteProductInventories = (e, index) => {
+    e.preventDefault();
+    JSON.parse(JSON.stringify(productInventory.splice(index, 1)));
+    setProductInventories(productInventory);
+  };
+
+  const handleDelete = (e, index, indexAttr) => {
+    e.preventDefault();
+    productInventory[index].attributeValues.splice(indexAttr, 1);
+    setProductInventories(productInventory);
+  };
+
+  const handleClick = async (e) => {
+    e.preventDefault();
+    const _productInventories = productInventories.map((item) => {
+      const attributeValues = item.attributeValues.reduce((total, property) => {
+        return {
+          ...total,
+          [property.productAttribute]: property.value
+        };
+      }, {});
+      return {
+        ...item,
+        attributeValues: attributeValues
+      };
     });
-    setInputsInventory(newData);
-  };
-
-  const handleClick = (e) => {
-    e.preventDefault();
-  };
-
-  const [inventories, setInventories] = useState([{ key: 0, productAttribute: '', value: null }]);
-  const [count, SetCount] = useState(1);
-  const handleAdd = (e) => {
-    e.preventDefault();
-    const newData = { key: count, productAttribute: '', value: null };
-    setInventories([...inventories, newData]);
-    SetCount(count + 1);
-  };
-  const handleDelete = (e, index) => {
-    e.preventDefault();
-    const newData = inventories.filter((item) => item.key !== index);
-    setInventories(newData);
+    const data = {
+      ...inputs,
+      productInventoryPojos: [_productInventories]
+    };
+    const product = await userRequest.post('/catalog/products/add', data);
+    if (product !== undefined) {
+      const dataMedia = [...file];
+      dataMedia.forEach(async (item) => {
+        let bodyFormData = new FormData();
+        bodyFormData.set('code', product?.code);
+        bodyFormData.set('type', 'product');
+        bodyFormData.set('media', item);
+        console.log(bodyFormData);
+        await userRequest.post('/media/add', bodyFormData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+      });
+    }
   };
   return (
     <div className="newProduct">
@@ -62,8 +134,7 @@ export default function NewProductAdmin() {
                 id="file"
                 multiple
                 onChange={(e) => {
-                  console.log(e.target.files);
-                  // return setFile(e.target.files[0])
+                  return setFile(e.target.files);
                 }}
               />
             </div>
@@ -77,68 +148,118 @@ export default function NewProductAdmin() {
             </div>
             <div className="addProductItem">
               <label>Category</label>
-              <select />
+              <select onChange={handleChange} name="categoryCode">
+                <option>category</option>
+                {category?.map((cat) => {
+                  return <option value={cat.value}>{cat.label}</option>;
+                })}
+              </select>
             </div>
             <div className="addProductItem">
               <label>Brand</label>
-              <select />
+              <select onChange={handleChange} name="brandId">
+                <option>brands</option>
+                {brands?.map((brand) => {
+                  return <option value={brand.value}>{brand.label}</option>;
+                })}
+              </select>
             </div>
             <div className="addProductItem">
-              <label>ProductInventories</label>
               <div className="inventory">
-                {inventories.map((item, index) => {
+                {productInventories?.map((productInvent, index) => {
                   return (
-                    <div className="ProductInventories">
+                    <>
                       <div>
-                        <input
-                          type="text"
-                          placeholder="productAttribute"
-                          name={`productAttribute`}
-                          className="inventoryProduct"
-                          onChange={(e) => {
-                            handleChangeProductInventories(e, index);
-                          }}
-                        />
+                        <label>productInventories {index + 1}</label>{' '}
+                        {index >= 1 && (
+                          <button
+                            className="buttonAdd"
+                            onClick={(e) => {
+                              handleDeleteProductInventories(e, index);
+                            }}
+                          >
+                            - productInventories
+                          </button>
+                        )}
+                        {productInvent.attributeValues.map((attributes, indexAttr) => {
+                          return (
+                            <>
+                              <div className="RetailPriceUnits">
+                                <select
+                                  onChange={(e) => {
+                                    handleChangeProductInventories(e, index, indexAttr);
+                                  }}
+                                  name="productAttribute"
+                                  className="inventoryProduct"
+                                >
+                                  <option>productAttribute</option>
+                                  {attribute?.map((att) => {
+                                    return <option value={att.value}>{att.label}</option>;
+                                  })}
+                                </select>
+                                <div>
+                                  <input
+                                    type="text"
+                                    placeholder="value"
+                                    name={`value`}
+                                    className="inventoryProduct"
+                                    onChange={(e) => {
+                                      handleChangeProductInventories(e, index, indexAttr);
+                                    }}
+                                  />
+                                </div>
+                                {indexAttr >= 1 && (
+                                  <button
+                                    className="buttonSubProductInventories"
+                                    onClick={(e) => {
+                                      handleDelete(e, index, indexAttr);
+                                    }}
+                                  >
+                                    -
+                                  </button>
+                                )}
+                              </div>
+                              <button
+                                onClick={(e) => {
+                                  handleAdd(e, index, indexAttr);
+                                }}
+                                className="buttonAddProductInventories"
+                              >
+                                +
+                              </button>
+                            </>
+                          );
+                        })}
+                        <div className="RetailPriceUnits">
+                          <div className="retailPrice">
+                            <label>RetailPrice</label>
+                            <input
+                              type="Number"
+                              name="retailPrice"
+                              onChange={(e) => {
+                                handleChangeProductInven(e, index);
+                              }}
+                            />
+                          </div>
+                          <div className="units">
+                            <label>Units</label>
+                            <input
+                              type="Number"
+                              name="units"
+                              onChange={(e) => {
+                                handleChangeProductInven(e, index);
+                              }}
+                            />
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <input
-                          type="text"
-                          name={`value`}
-                          placeholder="value"
-                          className="inventoryProduct"
-                          onChange={(e) => {
-                            handleChangeProductInventories(e, index);
-                          }}
-                        ></input>
-                      </div>
-                      {index !== 0 && (
-                        <button
-                          className="buttonSubProductInventories"
-                          onClick={(e) => {
-                            handleDelete(e, index);
-                          }}
-                        >
-                          -
-                        </button>
-                      )}
-                    </div>
+                    </>
                   );
                 })}
+                <button onClick={handleAddProductInventories} className="buttonAdd">
+                  + ProductInventories
+                </button>
               </div>
-              <button onClick={handleAdd} className="buttonAddProductInventories">
-                +
-              </button>
-              <div className="addProductItem">
-                <label>RetailPrice</label>
-                <input type="Number" name="retailPrice" onChange={handleChange} />
-              </div>
-              <div className="addProductItem">
-                <label>Units</label>
-                <input type="text" name="units" onChange={handleChange} />
-              </div>
-              <button onClick={handleAdd} className="buttonAdd">
-                + ProductInventories
-              </button>
             </div>
             <button className="addProductButton" onClick={handleClick}>
               Create
