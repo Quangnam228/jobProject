@@ -1,13 +1,13 @@
-.productList {
+.brandList {
   flex: 4;
 }
 
-.productListItem {
+.brandListItem {
   display: flex;
   align-items: center;
 }
 
-.productListImg {
+.brandListImg {
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -15,7 +15,7 @@
   margin-right: 10px;
 }
 
-.productListEdit {
+.brandListEdit {
   border: none;
   border-radius: 10px;
   padding: 5px 10px;
@@ -25,12 +25,12 @@
   margin-right: 20px;
 }
 
-.productListDelete {
+.brandListDelete {
   color: red;
   cursor: pointer;
 }
 
-.productInfoImg {
+.brandInfoImg {
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -38,7 +38,7 @@
   margin-right: 20px;
 }
 
-.productAddButton {
+.brandAddButton {
   width: 100px;
   border: none;
   padding: 5px;

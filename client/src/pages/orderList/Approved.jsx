@@ -98,7 +98,6 @@ export default function Approved() {
         columns={columns}
         getRowId={(row) => row.id}
         pageSize={8}
-        checkboxSelection
       />
     </div>
   );

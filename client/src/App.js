@@ -13,14 +13,17 @@ import OrderList from './pages/orderList/OrderList';
 import OrderDetailAdmin from './pages/orderDetail/OrderDetailAdmin';
 import Approved from './pages/orderList/Approved';
 import NewProductAdmin from './pages/newProduct/NewProductAdmin';
+import Category from './pages/category/Category';
+import NewCategory from './pages/newCategory/NewCategory';
+import Brand from './pages/brand/Brand';
+import NewBrand from './pages/newBrand/NewBrand';
+import ProductAttribute from './pages/productAttribute/ProductAttribute';
+import NewProductAttribute from './pages/newProductAttribute/NewProductAttribute';
 import ProductReviewAdmin from './pages/productReview/ProductReviewAdmin';
 
 function App() {
   const user = useSelector((state) => state.userAdmin?.currentUser?.user);
-  // const navigate = useNavigate();
-  // if (!user) {
-  //   navigate('/auth/login');
-  // }
+
   return (
     <BrowserRouter>
       <Routes>
@@ -31,6 +34,15 @@ function App() {
             <Route path="user/:userId" element={<UserAdmin />} />
             <Route path="newUser" element={<NewUserAdmin />} />
             <Route path="products" element={<ProductListAdmin />} />
+            <Route path="category" element={<Category />} />
+            <Route path="newCategory" element={<NewCategory />} />
+
+            <Route path="brand" element={<Brand />} />
+            <Route path="newBrand" element={<NewBrand />} />
+
+            <Route path="productAttribute" element={<ProductAttribute />} />
+            <Route path="newProductAttribute" element={<NewProductAttribute />} />
+
             <Route path="products/:code" element={<ProductAdmin />} />
             <Route path="newproduct" element={<NewProductAdmin />} />
             <Route path="order/:code" element={<OrderDetailAdmin />} />

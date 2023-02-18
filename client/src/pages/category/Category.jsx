@@ -1,4 +1,4 @@
-import './productList.css';
+import './categoryList.css';
 import { DataGrid } from '@material-ui/data-grid';
 import { DeleteOutline } from '@material-ui/icons';
 import { Link, useNavigate } from 'react-router-dom';
@@ -6,39 +6,34 @@ import { useEffect, useState } from 'react';
 import { userRequest } from '../../requestMethods';
 import { toast } from 'react-toastify';
 
-export default function ProductListAdmin() {
-  const [products, setProduct] = useState([]);
+export default function Category() {
+  const [category, setCategory] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const productlist = async () => {
-      const res = await userRequest.get('/catalog/products', { params: { size: 10000000 } });
-      setProduct(res.data.products);
+    const categoryList = async () => {
+      const res = await userRequest.get('catalog/categories/all-category');
+      setCategory(res.data);
     };
-    productlist();
+    categoryList();
   }, []);
   const handleOpen = async (code) => {
-    await userRequest.post(`/catalog/products/delete/${code}`);
-
+    await userRequest.post(`/catalog/categories/delete/${code}`);
     toast.success('xóa thành công');
-    navigate('/admin/products');
+    window.location.reload(false);
   };
   const columns = [
     {
       field: 'imgUrl',
-      headerName: ' ',
+      headerName: 'Ảnh',
       width: 160,
       renderCell: (params) => {
-        return <img src={params?.row.imgUrl} alt="" className="productInfoImg" />;
+        return <img src={params?.row.imgUrl} alt="" className="categoryInfoImg" />;
       }
     },
     { field: 'code', headerName: 'Mã sản phẩm', width: 220 },
     { field: 'name', headerName: 'Tên', width: 220 },
-    {
-      field: 'price',
-      headerName: 'giá',
-      width: 160
-    },
+    { field: 'isActive', headerName: 'Trạng thái', width: 220 },
     {
       field: 'action',
       headerName: 'Action',
@@ -46,10 +41,7 @@ export default function ProductListAdmin() {
       renderCell: (params) => {
         return (
           <>
-            <Link to={'' + params.row.code}>
-              <button className="productListEdit">Edit</button>
-            </Link>
-            <DeleteOutline className="productListDelete" onClick={() => handleOpen(params.row.code)} />
+            <DeleteOutline className="categoryListDelete" onClick={() => handleOpen(params.row.code)} />
           </>
         );
       }
@@ -57,15 +49,15 @@ export default function ProductListAdmin() {
   ];
 
   return (
-    <div className="productList">
-      <div className="productTitleContainer">
-        <h1 className="productTitle">Danh sách sản phẩm</h1>
-        <Link to="/admin/newproduct">
-          <button className="productAddButton">Thêm mới</button>
+    <div className="categoryList">
+      <div className="categoryTitleContainer">
+        <h1 className="categoryTitle">Danh sách loại sản phẩm</h1>
+        <Link to="/admin/newCategory">
+          <button className="categoryAddButton">Thêm mới</button>
         </Link>
       </div>
       <DataGrid
-        rows={products}
+        rows={category}
         disableSelectionOnClick
         columns={columns}
         getRowId={(row) => row.code}

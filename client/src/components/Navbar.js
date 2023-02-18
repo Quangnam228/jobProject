@@ -15,7 +15,7 @@ function Navbar() {
 
   const handleLogout = () => {
     localStorage.removeItem('persist:root');
-    navigate('/home');
+    navigate('/auth/login');
     dispatch(resetUser());
   };
   const handleRender = () => {

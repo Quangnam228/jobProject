@@ -21,38 +21,56 @@ export default function Sidebar() {
             <Link to="/admin/home" className="link">
               <li className="sidebarListItem active">
                 <LineStyle className="sidebarIcon" />
-                Dashboard
+                Trang chủ
               </li>
             </Link>
           </ul>
         </div>
         <div className="sidebarMenu">
-          <h3 className="sidebarTitle">Quick Menu</h3>
+          <h3 className="sidebarTitle">Menu</h3>
           <ul className="sidebarList">
             <Link to="/admin/users" className="link">
               <li className="sidebarListItem">
                 <PermIdentity className="sidebarIcon" />
-                Users
+                Người dùng
               </li>
             </Link>
             <Link to="/admin/products" className="link">
               <li className="sidebarListItem">
                 <Storefront className="sidebarIcon" />
-                Products
+                Sản phẩm
+              </li>
+            </Link>
+            <Link to="/admin/category" className="link">
+              <li className="sidebarListItem">
+                <Storefront className="sidebarIcon" />
+                Danh mục
+              </li>
+            </Link>
+            <Link to="/admin/brand" className="link">
+              <li className="sidebarListItem">
+                <Storefront className="sidebarIcon" />
+                Hãng sản xuất
+              </li>
+            </Link>
+            <Link to="/admin/productAttribute" className="link">
+              <li className="sidebarListItem">
+                <Storefront className="sidebarIcon" />
+                Thuộc tính
               </li>
             </Link>
             <Link to="/admin/orders" className="link">
               <li className="sidebarListItem">
                 <AttachMoney className="sidebarIcon" />
-                Order
+                Đơn hàng
               </li>
             </Link>
-            <Link to="/admin/reviewProduct" className="link">
+            {/* <Link to="/admin/reviewProduct" className="link">
               <li className="sidebarListItem">
                 <DynamicFeed className="sidebarIcon" />
                 Review
               </li>
-            </Link>
+            </Link> */}
             {/* <Link to="/trash" className="link">
               <li className="sidebarListItem">
                 <DeleteSweep className="sidebarIcon" />
