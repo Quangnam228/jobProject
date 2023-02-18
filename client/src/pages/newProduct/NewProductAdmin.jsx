@@ -121,6 +121,12 @@ export default function NewProductAdmin() {
         });
       });
     }
+    if(product.status === 200) {
+      toast.success('thêm sản phẩm thành công');
+      navigate('/admin/products')
+    }else {
+      toast.warning('thêm sản phẩm thành thất bại');
+    }
   };
   return (
     <div className="newProduct">
