@@ -48,7 +48,7 @@ export default function OrderDetailAdmin() {
   };
   return (
     <div className="order">
-      <h1 className="orderTitle">Edit order</h1>
+      <h1 className="orderTitle">Chỉnh sửa đơn đặt hàng</h1>
       <div className="orderContainer">
         <div className="orderShow">
           <div className="orderShowTop">
@@ -57,7 +57,7 @@ export default function OrderDetailAdmin() {
             </div>
           </div>
           <div className="orderShowBottom">
-            <span className="orderShowTitle">Order Details</span>
+            <span className="orderShowTitle">Chi tiết đơn hàng</span>
 
             <div className="orderShowInfo">
               <span className="orderShowInfoTitle">{/* {`Id: `} {orderDetail.id} */}</span>
@@ -90,7 +90,7 @@ export default function OrderDetailAdmin() {
             <form className="orderUpdateForm">
               <div className="orderUpdateLeft">
                 <div className="orderUpdateItem">
-                  <label>status</label>
+                  <label>trạng thái</label>
                   <select id="isAdmin" className="orderUpdateInput" onChange={handleChange} name="status">
                     <option name="status" value="pending">
                       Pending
@@ -109,7 +109,7 @@ export default function OrderDetailAdmin() {
               </div>
               <div className="orderUpdateRight">
                 <button className="orderUpdateButton" onClick={handleClick}>
-                  Update
+                  Cập nhật
                 </button>
               </div>
             </form>
@@ -117,7 +117,7 @@ export default function OrderDetailAdmin() {
             <form className="orderUpdateForm">
               <div className="orderUpdateLeft">
                 <div className="orderUpdateItem">
-                  <label>status</label>
+                  <label>trạng thái</label>
                   <select id="isAdmin" className="orderUpdateInput" onChange={handleChange} name="status">
                     <option name="status" value="approved">
                       Approved
@@ -133,7 +133,7 @@ export default function OrderDetailAdmin() {
               </div>
               <div className="orderUpdateRight">
                 <button className="orderUpdateButton" onClick={handleClick}>
-                  Update
+                  cập nhật
                 </button>
               </div>
             </form>

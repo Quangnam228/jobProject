@@ -83,7 +83,7 @@ export default function OrderList() {
   return (
     <div className="productList">
       <div className="productTitleContainer">
-        <h1 className="productTitle">Order</h1>
+        <h1 className="productTitle">Đặt hàng</h1>
       </div>
       <DataGrid
         rows={rows}

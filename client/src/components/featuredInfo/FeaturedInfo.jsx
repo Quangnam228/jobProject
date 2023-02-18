@@ -46,7 +46,7 @@ export default function FeaturedInfo() {
   return (
     <div className="featured">
       <div className="featuredItem">
-        <span className="featuredTitle">Revenue</span>
+        <span className="featuredTitle">Doanh thu</span>
         <div className="featuredMoneyContainer">
           <span className="featuredMoney">${income[0]?.total}</span>
           <span className="featuredMoneyRate">
@@ -54,33 +54,33 @@ export default function FeaturedInfo() {
             {perc < 0 ? <ArrowDownward className="featuredIcon negative" /> : <ArrowUpward className="featuredIcon" />}
           </span>
         </div>
-        <span className="featuredSub">Compared to last month</span>
+        <span className="featuredSub">So với tháng trước</span>
       </div>
 
       <div className="featuredItem">
-        <span className="featuredTitle">User</span>
+        <span className="featuredTitle">Người dùng</span>
         <div className="featuredMoneyContainer">
           <span className="featuredMoney">{users?.data?.length}</span>
           <span className="featuredMoneyRate"></span>
         </div>
 
         <a href="/admin/users" className="featuredSub">
-          see all user
+          xem tất cả người dùng
         </a>
       </div>
       <div className="featuredItem">
-        <span className="featuredTitle">Product</span>
+        <span className="featuredTitle">Sản phẩm</span>
         <div className="featuredMoneyContainer">
           <span className="featuredMoney">{products?.totalItems}</span>
           <span className="featuredMoneyRate"></span>
         </div>
 
         <a href="/admin/products" className="featuredSub">
-          see all product
+          xem tất cả sản phẩm
         </a>
       </div>
       <div className="featuredItem">
-        <span className="featuredTitle">Total Revenue</span>
+        <span className="featuredTitle">Tổng doanh thu</span>
         <div className="featuredMoneyContainer">
           <span className="featuredMoney">{total}VND</span>
         </div>

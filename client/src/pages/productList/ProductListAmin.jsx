@@ -70,9 +70,9 @@ export default function ProductListAdmin() {
   return (
     <div className="productList">
       <div className="productTitleContainer">
-        <h1 className="productTitle">Product</h1>
+        <h1 className="productTitle">Danh sách sản phẩm</h1>
         <Link to="/admin/newproduct">
-          <button className="productAddButton">Create</button>
+          <button className="productAddButton">Thêm mới</button>
         </Link>
       </div>
       <DataGrid

@@ -44,8 +44,8 @@ export default function HomeAdmin() {
   return (
     <div className="home">
       <FeaturedInfo />
-      <Chart data={userStats} title="newUser Analytics" grid dataKey="new User" />
-      <Chart data={orderMonths} title="Revenue Analytics" grid dataKey="Revenue" />
+      <Chart data={userStats} title="Biểu đồ người dùng" grid dataKey="new User" />
+      <Chart data={orderMonths} title="Buổi đồ doanh thu" grid dataKey="Revenue" />
 
       {/* <div className="homeWidgets">
         <WidgetLg />

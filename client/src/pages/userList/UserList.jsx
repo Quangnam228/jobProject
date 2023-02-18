@@ -60,7 +60,7 @@ export default function UserListAdmin() {
   return (
     <div className="userList">
       <div className="userTitleContainer">
-        <h1 className="userTitle">Users</h1>
+        <h1 className="userTitle">Danh sách người dùng</h1>
       </div>
       <DataGrid
         rows={user}

@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useMemo } from 'react';
@@ -7,7 +6,6 @@ import { userRequest } from '../../requestMethods';
 
 export default function NewProductAdmin() {
   const [inputs, setInputs] = useState({});
-  const [file, setFile] = useState(null);
   const [brands, setBrands] = useState();
   const [category, setCategory] = useState();
   const [attribute, setAttribute] = useState();
@@ -105,20 +103,7 @@ export default function NewProductAdmin() {
       ...inputs,
       productInventoryPojos: [_productInventories]
     };
-    const product = await userRequest.post('/catalog/products/add', data);
-    if (product !== undefined) {
-      const dataMedia = [...file];
-      dataMedia.forEach(async (item) => {
-        let bodyFormData = new FormData();
-        bodyFormData.set('code', product?.code);
-        bodyFormData.set('type', 'product');
-        bodyFormData.set('media', item);
-        console.log(bodyFormData);
-        await userRequest.post('/media/add', bodyFormData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
-      });
-    }
+    const product = await userRequest.post('/catalog/products/update', data);
   };
   return (
     <div className="newProduct">
@@ -126,17 +111,6 @@ export default function NewProductAdmin() {
         <h1 className="addProductTitle">Cập nhật sản phẩm</h1>
         <form className="addProductForm">
           <div className="addProductContainer1">
-            <div className="addProductItem">
-              <label>Image</label>
-              <input
-                type="file"
-                id="file"
-                multiple
-                onChange={(e) => {
-                  return setFile(e.target.files);
-                }}
-              />
-            </div>
             <div className="addProductItem">
               <label>Name</label>
               <input type="text" name="name" onChange={handleChange} />
