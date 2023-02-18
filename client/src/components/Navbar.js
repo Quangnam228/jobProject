@@ -56,7 +56,7 @@ function Navbar() {
       <Wrapper>
         <Left>{/* <Language>EN</Language> */}</Left>
         <Center>
-          <Link to="/home">
+          <Link to="/admin/home">
             <Logo>.NN</Logo>
           </Link>
         </Center>
