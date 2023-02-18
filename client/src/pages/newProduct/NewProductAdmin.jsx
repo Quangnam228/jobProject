@@ -22,11 +22,11 @@ export default function NewProductAdmin() {
   useEffect(() => {
     const callApi = async () => {
       const brand = await userRequest.get('catalog/brands');
-      setBrands(brand.data.map((item) => ({ label: item.name, value: item.code })));
+      setBrands(brand.data.map((item) => ({ label: item.name, value: item.id })));
       const category = await userRequest.get('catalog/categories');
-      setCategory(category.data.map((item) => ({ label: item.name, value: item.code })));
+      setCategory(category.data.map((item) => ({ label: item.name, value: item.id })));
       const att = await userRequest.get('/inventories/product-attributes');
-      setAttribute(att.data.map((item) => ({ label: item.name, value: item.code })));
+      setAttribute(att.data.map((item) => ({ label: item.name, value: item.id })));
     };
     callApi();
   }, []);
@@ -53,11 +53,12 @@ export default function NewProductAdmin() {
   const handleChangeProductInven = (e, index) => {
     const newData = [...productInventory];
     if (e.target.name === 'retailPrice') {
-      newData[index].retailPrice = e.target.value;
+      newData[index].retailPrice = Number(e.target.value);
     }
     if (e.target.name === 'units') {
-      newData[index].units = e.target.value;
+      newData[index].units = Number(e.target.value);
     }
+    console.log(newData);
     setProductInventories(newData);
   };
 
@@ -104,14 +105,14 @@ export default function NewProductAdmin() {
     });
     const data = {
       ...inputs,
-      productInventoryPojos: [_productInventories]
+      productInventoryPojos: [..._productInventories]
     };
     const product = await userRequest.post('/catalog/products/add', data);
     if (product !== undefined) {
       const dataMedia = [...file];
       dataMedia.forEach(async (item) => {
         let bodyFormData = new FormData();
-        bodyFormData.set('code', product?.code);
+        bodyFormData.set('code', product?.data?.code);
         bodyFormData.set('type', 'product');
         bodyFormData.set('media', item);
         console.log(bodyFormData);
@@ -124,7 +125,7 @@ export default function NewProductAdmin() {
   return (
     <div className="newProduct">
       <div className="newProductContainer">
-        <h1 className="addProductTitle">New Product</h1>
+        <h1 className="addProductTitle">Thêm Sản phẩm</h1>
         <form className="addProductForm">
           <div className="addProductContainer1">
             <div className="addProductItem">

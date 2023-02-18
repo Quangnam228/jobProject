@@ -1,16 +1,14 @@
-import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { useState, useEffect, useRef } from 'react';
 import { useMemo } from 'react';
 import { userRequest } from '../../requestMethods';
 
 export default function NewProductAdmin() {
   const [inputs, setInputs] = useState({});
-  const [file, setFile] = useState(null);
   const [brands, setBrands] = useState();
   const [category, setCategory] = useState();
   const [attribute, setAttribute] = useState();
+  const [productDetail, setProductDetail] = useState();
+  const productId = location.pathname.split('/')[3];
   const [productInventories, setProductInventories] = useState([
     {
       attributeValues: [{ productAttribute: '', value: '' }],
@@ -21,16 +19,32 @@ export default function NewProductAdmin() {
   useEffect(() => {
     const callApi = async () => {
       const brand = await userRequest.get('catalog/brands');
-      setBrands(brand.data.map((item) => ({ label: item.name, value: item.code })));
+      setBrands(brand.data.map((item) => ({ label: item.name, value: item.id })));
       const category = await userRequest.get('catalog/categories');
       setCategory(category.data.map((item) => ({ label: item.name, value: item.code })));
       const att = await userRequest.get('/inventories/product-attributes');
-      setAttribute(att.data.map((item) => ({ label: item.name, value: item.code })));
+      setAttribute(att.data.map((item) => ({ label: item.name, value: item.id })));
+      const productDetail = await userRequest.get(`/catalog/products/product/${productId}`);
+      setProductDetail(productDetail.data)
     };
     callApi();
   }, []);
+
+  useEffect(() => {
+    if (brands?.length) {
+      setInputs(prevInputs => ({ ...prevInputs, brandId: productDetail?.brand?.id }))
+    }
+    if (category?.length) {
+      category.map(cat => {
+        if(cat.label === productDetail?.categories[0].name){
+          setInputs(prevInputs => ({ ...prevInputs, categoryCode: cat.value}))
+        }
+      })
+      console.log(inputs);
+    }
+  }, [brands, category, productDetail])
+
   const productInventory = useMemo(() => JSON.parse(JSON.stringify(productInventories)), [productInventories]);
-  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setInputs((prev) => {
@@ -86,7 +100,6 @@ export default function NewProductAdmin() {
     productInventory[index].attributeValues.splice(indexAttr, 1);
     setProductInventories(productInventory);
   };
-
   const handleClick = async (e) => {
     e.preventDefault();
     const _productInventories = productInventories.map((item) => {
@@ -105,20 +118,7 @@ export default function NewProductAdmin() {
       ...inputs,
       productInventoryPojos: [_productInventories]
     };
-    const product = await userRequest.post('/catalog/products/add', data);
-    if (product !== undefined) {
-      const dataMedia = [...file];
-      dataMedia.forEach(async (item) => {
-        let bodyFormData = new FormData();
-        bodyFormData.set('code', product?.code);
-        bodyFormData.set('type', 'product');
-        bodyFormData.set('media', item);
-        console.log(bodyFormData);
-        await userRequest.post('/media/add', bodyFormData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
-      });
-    }
+    await userRequest.post('/catalog/products/add', data);
   };
   return (
     <div className="newProduct">
@@ -127,28 +127,16 @@ export default function NewProductAdmin() {
         <form className="addProductForm">
           <div className="addProductContainer1">
             <div className="addProductItem">
-              <label>Image</label>
-              <input
-                type="file"
-                id="file"
-                multiple
-                onChange={(e) => {
-                  return setFile(e.target.files);
-                }}
-              />
-            </div>
-            <div className="addProductItem">
               <label>Name</label>
-              <input type="text" name="name" onChange={handleChange} />
+              <input type="text" name="name" defaultValue={productDetail?.name} onChange={handleChange} />
             </div>
             <div className="addProductItem">
               <label>Description</label>
-              <input type="text" name="description" onChange={handleChange} />
+              <input type="text" name="description" defaultValue={productDetail?.description} onChange={handleChange} />
             </div>
             <div className="addProductItem">
               <label>Category</label>
-              <select onChange={handleChange} name="categoryCode">
-                <option>category</option>
+              <select onChange={handleChange} value={inputs.categoryCode} name="categoryCode">
                 {category?.map((cat) => {
                   return <option value={cat.value}>{cat.label}</option>;
                 })}
@@ -156,8 +144,7 @@ export default function NewProductAdmin() {
             </div>
             <div className="addProductItem">
               <label>Brand</label>
-              <select onChange={handleChange} name="brandId">
-                <option>brands</option>
+              <select onChange={handleChange} value={inputs.brandId} name="brandId">
                 {brands?.map((brand) => {
                   return <option value={brand.value}>{brand.label}</option>;
                 })}
@@ -235,6 +222,7 @@ export default function NewProductAdmin() {
                             <input
                               type="Number"
                               name="retailPrice"
+                              defaultValue={productDetail?.price}
                               onChange={(e) => {
                                 handleChangeProductInven(e, index);
                               }}
@@ -245,6 +233,8 @@ export default function NewProductAdmin() {
                             <input
                               type="Number"
                               name="units"
+                              defaultValue={productDetail?.totalUnitSold}
+
                               onChange={(e) => {
                                 handleChangeProductInven(e, index);
                               }}

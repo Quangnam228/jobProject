@@ -3,18 +3,7 @@ import { DataGrid } from '@material-ui/data-grid';
 import { DeleteOutline } from '@material-ui/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { deleteProduct, getProducts } from '../../redux/apiCallsAdmin';
-
-import Button from '@mui/material/Button';
-import Modal from '@mui/material/Modal';
-import { FormGroup } from '@mui/material';
-import Stack from '@mui/material/Stack';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
 import { userRequest } from '../../requestMethods';
-import { async } from '@firebase/util';
 import { toast } from 'react-toastify';
 
 export default function ProductListAdmin() {
@@ -37,7 +26,7 @@ export default function ProductListAdmin() {
   const columns = [
     {
       field: 'imgUrl',
-      headerName: '  ',
+      headerName: ' ',
       width: 160,
       renderCell: (params) => {
         return <img src={params?.row.imgUrl} alt="" className="productInfoImg" />;
